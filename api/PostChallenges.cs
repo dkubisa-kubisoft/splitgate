@@ -36,7 +36,6 @@ namespace Splitgate.Api
                     throw new ArgumentNullException(nameof(log));
                 }
                 
-
                 PostChallengesRequest request = new PostChallengesRequest();
 
                 try 
@@ -57,6 +56,7 @@ namespace Splitgate.Api
                 var tableClient = tableServicesClient.GetTableClient(TableNames.Challenges);
 
                 foreach( var challenge in request.Challenges) {
+                    challenge.RowKey = Guid.NewGuid().ToString();
                     await tableClient.AddEntityAsync<Challenge>(challenge).ConfigureAwait(false);
                 }
             

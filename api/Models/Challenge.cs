@@ -14,10 +14,10 @@ namespace Splitgate.Api.Models
         public string Description { get; set; }
 
         [JsonProperty("startDateUtc")]
-        public string StartDateUtc {get; set;}
+        public DateTime StartDateUtc {get; set;}
 
         [JsonProperty("endDateUtc")]
-        public string EndDateUtc {get; set;}
+        public DateTime EndDateUtc {get; set;}
 
         public string PartitionKey 
         { 
@@ -32,14 +32,7 @@ namespace Splitgate.Api.Models
 
         public string RowKey 
         { 
-            get 
-            {
-                return $"{this.ChallengeType},{this.Description},{this.StartDateUtc},{this.EndDateUtc}";
-            }
-            
-            set
-            {
-            } 
+            get; set;
         }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
