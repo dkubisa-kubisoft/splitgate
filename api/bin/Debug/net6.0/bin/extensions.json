@@ -1,5 +1,0 @@
-{
-  "extensions":[
-    { "name": "Startup", "typeName":"Splitgate.Api.Startup, api, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"}
-  ]
-}
