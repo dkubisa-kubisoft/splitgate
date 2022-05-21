@@ -2,6 +2,7 @@ namespace Splitgate.Api
 {
     using System;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.WebJobs;
@@ -12,6 +13,7 @@ namespace Splitgate.Api
     using Azure.Data.Tables;
     using Splitgate.Api.Models;
     using Splitgate.Api.Response;
+    using Splitgate.Api.Entities;
 
     public class GetCurrentChallenges
     {
@@ -23,18 +25,17 @@ namespace Splitgate.Api
         }
 
         [FunctionName("GetCurrentChallenges")]
-        public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = null)] HttpRequest req, ILogger log)
+        public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
         {
             log.LogInformation("GetCurrentChallenges called.");
 
             var tableClient = this.tableServiceClient.GetTableClient(TableNames.Challenges);
 
-            var challenges = tableClient.Query<Challenge>(c => c.StartDateUtc <= DateTime.UtcNow && c.EndDateUtc > DateTime.UtcNow);
+            var challengeEntities = tableClient.Query<ChallengeEntity>($"PartitionKey eq '{ DateTime.UtcNow.ToString(ChallengeEntity.PartitionKeyDateFormatString) }'");
 
             var response = new GetCurrentChallengesResponse();
 
-            response.Challenges.AddRange(challenges);
+            response.Challenges.AddRange(challengeEntities.Select(c => c.ToChallenge()));
 
             return new OkObjectResult(response);
         }

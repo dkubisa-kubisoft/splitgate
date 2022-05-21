@@ -1,9 +1,9 @@
 namespace Splitgate.Api.Models
 {
-    public enum ChallengeType 
+    public static class ChallengeTypes
     {
-        Daily,
-        Weekly,
-        Seasonal
+        public const string Daily = "daily";
+        public const string Weekly = "weekly";
+        public const string Seasonal = "seasonal";
     }
 }
