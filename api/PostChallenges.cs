@@ -13,6 +13,7 @@ namespace Splitgate.Api
     using System.Collections.Generic;
     using Splitgate.Api.Models;
     using Azure.Data.Tables;
+    using Splitgate.Api.Entities;
 
     public class PostChallenges
     {
@@ -42,7 +43,8 @@ namespace Splitgate.Api
                 {
                     request = JsonConvert.DeserializeObject<PostChallengesRequest>(await new StreamReader(req.Body).ReadToEndAsync());
 
-                    if (!request.Challenges.Any()) {
+                    if (!request.Challenges.Any()) 
+                    {
                         return new BadRequestObjectResult(new { Message = "Invalid request. Please provide a list of challenges." });
                     }
                 }
@@ -55,9 +57,11 @@ namespace Splitgate.Api
 
                 var tableClient = tableServicesClient.GetTableClient(TableNames.Challenges);
 
-                foreach( var challenge in request.Challenges) {
-                    challenge.RowKey = Guid.NewGuid().ToString();
-                    await tableClient.AddEntityAsync<Challenge>(challenge).ConfigureAwait(false);
+                foreach( var challenge in request.Challenges) 
+                {
+                    var entity = new ChallengeEntity(challenge);
+                    await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
+                    await tableClient.AddEntityAsync<ChallengeEntity>(entity).ConfigureAwait(false);
                 }
             
                 return new OkResult();
