@@ -42,7 +42,8 @@ namespace Splitgate.Api.Entities
             this.Index = challenge.Index;
             this.Description = challenge.Description;
             
-            this.PartitionKey = DateTime.UtcNow.ToString(PartitionKeyDateFormatString);
+            //this.PartitionKey = DateTime.UtcNow.ToString(PartitionKeyDateFormatString);
+            this.PartitionKey = "1";
             this.RowKey = $"{challenge.ChallengeType},{challenge.Index}";
         }
 

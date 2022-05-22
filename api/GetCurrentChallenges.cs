@@ -31,7 +31,8 @@ namespace Splitgate.Api
 
             var tableClient = this.tableServiceClient.GetTableClient(TableNames.Challenges);
 
-            var challengeEntities = tableClient.Query<ChallengeEntity>($"PartitionKey eq '{ DateTime.UtcNow.ToString(ChallengeEntity.PartitionKeyDateFormatString) }'");
+            //var challengeEntities = tableClient.Query<ChallengeEntity>($"PartitionKey eq '{ DateTime.UtcNow.ToString(ChallengeEntity.PartitionKeyDateFormatString) }'");
+            var challengeEntities = tableClient.Query<ChallengeEntity>($"PartitionKey eq '1'");
 
             var response = new GetCurrentChallengesResponse();
 
