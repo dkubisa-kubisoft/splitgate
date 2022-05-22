@@ -19,5 +19,8 @@ namespace Splitgate.Api.Models
 
         [JsonProperty("endDateUtc")]
         public DateTime EndDateUtc { get; set; }
+
+        [JsonProperty("completed")]
+        public bool Completed { get; set; }
     }
 }

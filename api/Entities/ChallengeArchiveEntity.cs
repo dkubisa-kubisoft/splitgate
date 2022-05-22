@@ -3,20 +3,20 @@ namespace Splitgate.Api.Entities
     using System;
     using Splitgate.Api.Models;
 
-    public class ChallengeEntity : TableEntity
+    public class ChallengeArchiveEntity : TableEntity
     {
-        public const string PartitionKeyDateFormatString = "yyyy-MM-dd";
+        private const string PartitionKeyDateFormatString = "yyyy-MM-dd";
         public string ChallengeType { get; set; }
         public string Index { get; set; }
         public string Description { get; set; }
         public string StartDateUtc { get;set; }
         public string EndDateUtc { get; set; }
 
-        public ChallengeEntity() 
+        public ChallengeArchiveEntity() 
         {
         }
 
-        public ChallengeEntity(Challenge challenge)
+        public ChallengeArchiveEntity(Challenge challenge)
         {
             // Validate input
             if (challenge.ChallengeType != ChallengeTypes.Daily
@@ -42,12 +42,11 @@ namespace Splitgate.Api.Entities
             this.Index = challenge.Index;
             this.Description = challenge.Description;
             
-            //this.PartitionKey = DateTime.UtcNow.ToString(PartitionKeyDateFormatString);
-            this.PartitionKey = "1";
+            this.PartitionKey = DateTime.UtcNow.AddHours(-8).ToString(ChallengeEntity.PartitionKeyDateFormatString);
             this.RowKey = $"{challenge.ChallengeType},{challenge.Index}";
         }
 
-        public Challenge ToChallenge(bool completed) 
+        public Challenge ToChallenge() 
         {
             return new Challenge
             {
@@ -55,8 +54,7 @@ namespace Splitgate.Api.Entities
                 Index = this.Index,
                 Description = this.Description,
                 StartDateUtc = DateTime.Parse(this.StartDateUtc),
-                EndDateUtc = DateTime.Parse(this.EndDateUtc),
-                Completed = completed
+                EndDateUtc = DateTime.Parse(this.EndDateUtc)
             };
         }
     }

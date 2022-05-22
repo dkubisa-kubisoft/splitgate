@@ -1,4 +1,4 @@
-namespace Splitgate.Api
+namespace Splitgate.Api.Functions
 {
     using System;
     using System.IO;
@@ -10,8 +10,7 @@ namespace Splitgate.Api
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using Newtonsoft.Json;
-    using System.Collections.Generic;
-    using Splitgate.Api.Models;
+    using Splitgate.Api.Request;
     using Azure.Data.Tables;
     using Splitgate.Api.Entities;
 
@@ -67,9 +66,8 @@ namespace Splitgate.Api
 
                     try 
                     {
-                        var archiveEntity = new ChallengeEntity(challenge);
-                        archiveEntity.PartitionKey = DateTime.UtcNow.AddHours(-8).ToString(ChallengeEntity.PartitionKeyDateFormatString);
-                        await challengeArchiveTableClient.AddEntityAsync<ChallengeEntity>(archiveEntity).ConfigureAwait(false);
+                        var archiveEntity = new ChallengeArchiveEntity(challenge);
+                        await challengeArchiveTableClient.AddEntityAsync<ChallengeArchiveEntity>(archiveEntity).ConfigureAwait(false);
                     }
                     catch 
                     {

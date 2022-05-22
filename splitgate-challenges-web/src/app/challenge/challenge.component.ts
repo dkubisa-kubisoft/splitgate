@@ -37,6 +37,10 @@ export class ChallengesComponent implements OnInit {
         );
   }
 
+  toggleChallengeCompletion(challenge: Challenge): void {
+    this.challengeService.toggleChallengeCompletion(challenge.challengeType + "," + challenge.index).subscribe(response => {});
+  }
+
   ngOnInit(): void {
     this.getCurrentChallenges();
   }

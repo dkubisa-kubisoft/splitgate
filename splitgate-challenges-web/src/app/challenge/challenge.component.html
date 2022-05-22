@@ -1,14 +1,14 @@
 <h2>Daily Challenges</h2>
-<div class="challenge noselect" *ngFor="let challenge of dailyChallenges" onclick="clickChallenge(this)">
+<div class="challenge noselect" *ngFor="let challenge of dailyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
     {{ challenge.description }}
 </div>
 
 <h2>Weekly Challenges</h2>
-<div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" onclick="clickChallenge(this)">
+<div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
     {{ challenge.description }}
 </div>
 
 <h2>Season Challenges</h2>
-<div class="challenge noselect" *ngFor="let challenge of seasonChallenges" onclick="clickChallenge(this)">
+<div class="challenge noselect" *ngFor="let challenge of seasonChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
     {{ challenge.description }}
 </div>
