@@ -1,6 +1,14 @@
-<h2>Current Challenges</h2>
-<ul class="challenges">
-    <li *ngFor="let challenge of challenges">
-        {{ challenge.challengeType | uppercase }} - {{ challenge.description }}
-    </li>
-</ul>
+<h2>Daily Challenges</h2>
+<div class="challenge noselect" *ngFor="let challenge of dailyChallenges" onclick="clickChallenge(this)">
+    {{ challenge.description }}
+</div>
+
+<h2>Weekly Challenges</h2>
+<div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" onclick="clickChallenge(this)">
+    {{ challenge.description }}
+</div>
+
+<h2>Season Challenges</h2>
+<div class="challenge noselect" *ngFor="let challenge of seasonChallenges" onclick="clickChallenge(this)">
+    {{ challenge.description }}
+</div>
