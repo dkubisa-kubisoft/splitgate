@@ -54,14 +54,27 @@ namespace Splitgate.Api
                 }
 
                 await this.tableServicesClient.CreateTableIfNotExistsAsync(TableNames.Challenges).ConfigureAwait(false);
+                await this.tableServicesClient.CreateTableIfNotExistsAsync(TableNames.ChallengeArchive).ConfigureAwait(false);
 
-                var tableClient = tableServicesClient.GetTableClient(TableNames.Challenges);
+                var challengesTableClient = tableServicesClient.GetTableClient(TableNames.Challenges);
+                var challengeArchiveTableClient = tableServicesClient.GetTableClient(TableNames.ChallengeArchive);
 
                 foreach( var challenge in request.Challenges) 
                 {
                     var entity = new ChallengeEntity(challenge);
-                    await tableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
-                    await tableClient.AddEntityAsync<ChallengeEntity>(entity).ConfigureAwait(false);
+                    await challengesTableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
+                    await challengesTableClient.AddEntityAsync<ChallengeEntity>(entity).ConfigureAwait(false);
+
+                    try 
+                    {
+                        var archiveEntity = new ChallengeEntity(challenge);
+                        archiveEntity.PartitionKey = DateTime.UtcNow.AddHours(-8).ToString(ChallengeEntity.PartitionKeyDateFormatString);
+                        await challengeArchiveTableClient.AddEntityAsync<ChallengeEntity>(archiveEntity).ConfigureAwait(false);
+                    }
+                    catch 
+                    {
+                        // record for today already exists in the archive, ignore
+                    }
                 }
             
                 return new OkResult();
