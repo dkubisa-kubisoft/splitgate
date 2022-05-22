@@ -1,4 +1,4 @@
-namespace Splitgate.Api
+namespace Splitgate.Api.Functions
 {
     using System;
     using System.IO;
@@ -9,9 +9,7 @@ namespace Splitgate.Api
     using Microsoft.Azure.WebJobs.Extensions.Http;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
     using Azure.Data.Tables;
-    using Splitgate.Api.Models;
     using Splitgate.Api.Response;
     using Splitgate.Api.Entities;
 
@@ -29,14 +27,18 @@ namespace Splitgate.Api
         {
             log.LogInformation("GetCurrentChallenges called.");
 
-            var tableClient = this.tableServiceClient.GetTableClient(TableNames.Challenges);
+            var challengesTable = this.tableServiceClient.GetTableClient(TableNames.Challenges);
+            var completedChallengesTable = this.tableServiceClient.GetTableClient(TableNames.CompletedChallenges);
+            var ip = req.HttpContext.Connection.RemoteIpAddress.ToString();
 
-            //var challengeEntities = tableClient.Query<ChallengeEntity>($"PartitionKey eq '{ DateTime.UtcNow.ToString(ChallengeEntity.PartitionKeyDateFormatString) }'");
-            var challengeEntities = tableClient.Query<ChallengeEntity>($"PartitionKey eq '1'");
+            var challengeEntities = challengesTable.Query<ChallengeEntity>($"PartitionKey eq '1'");
 
+            // Get the completed challenges for the caller's ip
+            var completedChallenges = completedChallengesTable.Query<Splitgate.Api.Entities.TableEntity>($"PartitionKey eq '{ip}'");
+            
             var response = new GetCurrentChallengesResponse();
 
-            response.Challenges.AddRange(challengeEntities.Select(c => c.ToChallenge()));
+            response.Challenges.AddRange(challengeEntities.Select(entity => entity.ToChallenge(completedChallenges.Any(completed => completed.RowKey == entity.RowKey))));
 
             return new OkObjectResult(response);
         }

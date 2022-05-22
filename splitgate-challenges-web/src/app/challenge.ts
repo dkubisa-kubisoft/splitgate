@@ -4,4 +4,5 @@ export interface Challenge {
     index: number;
     startDateUtc: string;
     endDateUtc: string;
+    completed: boolean;
 }
