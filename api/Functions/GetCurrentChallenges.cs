@@ -38,7 +38,7 @@ namespace Splitgate.Api.Functions
             
             var response = new GetCurrentChallengesResponse();
 
-            response.Challenges.AddRange(challengeEntities.Select(entity => entity.ToChallenge(completedChallenges.Any(completed => completed.RowKey == entity.RowKey))));
+            response.Challenges.AddRange(challengeEntities.Select(entity => entity.GetModelObject(completedChallenges.Any(completed => completed.RowKey == entity.RowKey))));
 
             return new OkObjectResult(response);
         }

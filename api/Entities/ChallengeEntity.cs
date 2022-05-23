@@ -16,38 +16,37 @@ namespace Splitgate.Api.Entities
         {
         }
 
-        public ChallengeEntity(Challenge challenge)
+        public ChallengeEntity(Challenge modelObject)
         {
             // Validate input
-            if (challenge.ChallengeType != ChallengeTypes.Daily
-                && challenge.ChallengeType != ChallengeTypes.Weekly
-                && challenge.ChallengeType != ChallengeTypes.Seasonal) 
+            if (modelObject.ChallengeType != ChallengeTypes.Daily
+                && modelObject.ChallengeType != ChallengeTypes.Weekly
+                && modelObject.ChallengeType != ChallengeTypes.Seasonal) 
             {
-                throw new ArgumentException($"Invalid challenge type: [{challenge.ChallengeType}].");
+                throw new ArgumentException($"Invalid challenge type: [{modelObject.ChallengeType}].");
             }
 
-            if (string.IsNullOrWhiteSpace(challenge.Index))
+            if (string.IsNullOrWhiteSpace(modelObject.Index))
             {
                 throw new ArgumentException("Missing challenge index.");
             }
 
-            if (string.IsNullOrWhiteSpace(challenge.Description))
+            if (string.IsNullOrWhiteSpace(modelObject.Description))
             {
                 throw new ArgumentException("Missing challenge description.");
             }
 
-            this.StartDateUtc = challenge.StartDateUtc.ToString("s");
-            this.EndDateUtc = challenge.EndDateUtc.ToString("s");
-            this.ChallengeType = challenge.ChallengeType;
-            this.Index = challenge.Index;
-            this.Description = challenge.Description;
+            this.StartDateUtc = modelObject.StartDateUtc.ToString("s");
+            this.EndDateUtc = modelObject.EndDateUtc.ToString("s");
+            this.ChallengeType = modelObject.ChallengeType;
+            this.Index = modelObject.Index;
+            this.Description = modelObject.Description;
             
-            //this.PartitionKey = DateTime.UtcNow.ToString(PartitionKeyDateFormatString);
             this.PartitionKey = "1";
-            this.RowKey = $"{challenge.ChallengeType},{challenge.Index}";
+            this.RowKey = $"{modelObject.ChallengeType},{modelObject.Index}";
         }
 
-        public Challenge ToChallenge(bool completed) 
+        public Challenge GetModelObject(bool completed) 
         {
             return new Challenge
             {
@@ -58,6 +57,11 @@ namespace Splitgate.Api.Entities
                 EndDateUtc = DateTime.Parse(this.EndDateUtc),
                 Completed = completed
             };
+        }
+
+        public ChallengeArchiveEntity GetArchiveEntity() 
+        {
+            return new ChallengeArchiveEntity(this.GetModelObject(false));
         }
     }
 }
