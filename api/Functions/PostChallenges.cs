@@ -13,6 +13,7 @@ namespace Splitgate.Api.Functions
     using Splitgate.Api.Request;
     using Azure.Data.Tables;
     using Splitgate.Api.Entities;
+    using Azure;
 
     public class PostChallenges
     {
@@ -57,12 +58,30 @@ namespace Splitgate.Api.Functions
 
                 var challengesTableClient = tableServicesClient.GetTableClient(TableNames.Challenges);
                 var challengeArchiveTableClient = tableServicesClient.GetTableClient(TableNames.ChallengeArchive);
+                var completedChallengesTableClient = tableServicesClient.GetTableClient(TableNames.CompletedChallenges);
 
                 foreach( var challenge in request.Challenges) 
                 {
-                    var entity = new ChallengeEntity(challenge);
-                    await challengesTableClient.DeleteEntityAsync(entity.PartitionKey, entity.RowKey).ConfigureAwait(false);
-                    await challengesTableClient.AddEntityAsync<ChallengeEntity>(entity).ConfigureAwait(false);
+                    var newChallenge = new ChallengeEntity(challenge);
+                    var existingChallenge = await challengesTableClient.GetEntityAsync<ChallengeEntity>("1", newChallenge.RowKey).ConfigureAwait(false);
+
+                    if (existingChallenge != null 
+                        && existingChallenge.Value != null 
+                        && existingChallenge.Value.EndDateUtc != newChallenge.EndDateUtc) 
+                    {
+                        // The new challenge replaces an existing one, wipe the completions for the old one and then delete it before adding the replacement
+                        var completions = completedChallengesTableClient.Query<ChallengeEntity>(c => c.RowKey == newChallenge.RowKey);
+                        foreach( var completion in completions) 
+                        {
+                            // Delete the completions
+                            await completedChallengesTableClient.DeleteEntityAsync(completion.PartitionKey, completion.RowKey).ConfigureAwait(false);
+                        }
+
+                        // Delete the old challenge
+                        await challengesTableClient.DeleteEntityAsync(newChallenge.PartitionKey, newChallenge.RowKey).ConfigureAwait(false);
+                    }
+
+                    await challengesTableClient.AddEntityAsync<ChallengeEntity>(newChallenge).ConfigureAwait(false);
 
                     try 
                     {
