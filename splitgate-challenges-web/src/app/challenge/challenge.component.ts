@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
 import { Challenge } from '../challenge';
 import { ChallengeService } from '../challenge.service';
+import { GetCurrentChallengesResponse } from '../Responses/GetCurrentChallengesResponse';
 
 @Component({
   selector: 'app-challenge',
@@ -87,5 +89,11 @@ export class ChallengesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentChallenges();
+
+    setInterval(() => {
+      this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+      this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+      this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+    }, 31000);
   }
 }
