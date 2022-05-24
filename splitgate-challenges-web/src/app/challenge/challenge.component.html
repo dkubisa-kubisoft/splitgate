@@ -1,17 +1,17 @@
 <h2>Daily Challenges</h2>
-<p>Expires in {{dailyExpiryTime}}</p>
+<p>Resets in {{dailyExpiryTime}}</p>
 <div class="challenge noselect" *ngFor="let challenge of dailyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
     {{ challenge.description }}
 </div>
 
 <h2>Weekly Challenges</h2>
-<p>Expires in {{weeklyExpiryTime}}</p>
+<p>Resets in {{weeklyExpiryTime}}</p>
 <div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
     {{ challenge.description }}
 </div>
 
 <h2>Season Challenges</h2>
-<p>Expires in {{seasonExpiryTime}}</p>
+<p>Resets in {{seasonExpiryTime}}</p>
 <div class="challenge noselect" *ngFor="let challenge of seasonChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
     {{ challenge.description }}
 </div>
