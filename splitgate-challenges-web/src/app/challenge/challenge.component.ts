@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
 import { Challenge } from '../challenge';
 import { ChallengeService } from '../challenge.service';
-import { GetCurrentChallengesResponse } from '../Responses/GetCurrentChallengesResponse';
 
 @Component({
   selector: 'app-challenge',
