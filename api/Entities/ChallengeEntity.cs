@@ -36,8 +36,8 @@ namespace Splitgate.Api.Entities
                 throw new ArgumentException("Missing challenge description.");
             }
 
-            this.StartDateUtc = modelObject.StartDateUtc.ToString("s");
-            this.EndDateUtc = modelObject.EndDateUtc.ToString("s");
+            this.StartDateUtc = modelObject.StartDateUtc.ToString("o");
+            this.EndDateUtc = modelObject.EndDateUtc.ToString("o");
             this.ChallengeType = modelObject.ChallengeType;
             this.Index = modelObject.Index;
             this.Description = modelObject.Description;

@@ -45,7 +45,7 @@ namespace Splitgate.Api.Functions
                 {
                     request = JsonConvert.DeserializeObject<PostChallengesRequest>(await new StreamReader(req.Body).ReadToEndAsync());
 
-                    if (!request.Challenges.Any()) 
+                    if (!request.Challenges.Any())
                     {
                         return new BadRequestObjectResult(new { Message = "Invalid request. Please provide a list of challenges." });
                     }
@@ -74,10 +74,10 @@ namespace Splitgate.Api.Functions
                     {
                         // The new challenge replaces an existing challenge. Purge the completions for the existing one since this one is different.
                         await PurgeCompletions(existingChallenge).ConfigureAwait(false);
-                    }
 
-                    // Archive the old challenge
-                    await ArchiveChallenge(existingChallenge, challengesTableClient).ConfigureAwait(false);
+                        // Archive the old challenge
+                        await ArchiveChallenge(existingChallenge, challengesTableClient).ConfigureAwait(false);
+                    }
 
                     // Add the new challenge
                     await challengesTableClient.AddEntityAsync<ChallengeEntity>(newChallenge).ConfigureAwait(false);
