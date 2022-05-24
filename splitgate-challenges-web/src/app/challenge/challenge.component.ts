@@ -87,5 +87,11 @@ export class ChallengesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentChallenges();
+
+    setInterval(() => {
+      this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+      this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+      this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+    }, 31000);
   }
 }
