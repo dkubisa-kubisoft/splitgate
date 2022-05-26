@@ -242,7 +242,7 @@ def DatetimeToString(dt):
 def ApiChallenge(type, idx, desc, start_dt, end_dt):
     """ JSON format specified by the PostChallenges API
     """
-    return {"challengeType": type, "index": idx + 1, "description": desc, "startDateUtc": DatetimeToString(start_dt), "endDateUtc": DatetimeToString(end_dt) }
+    return {"challengeType": type, "index": idx, "description": desc, "startDateUtc": DatetimeToString(start_dt), "endDateUtc": DatetimeToString(end_dt) }
 
 
 def PostToApi():
@@ -290,7 +290,7 @@ def PostToApi():
     json_obj["challenges"] = challenges
     json_str = json.dumps(json_obj)
     #print(json_str)
-    
+
     # POST JSON data to API
     api_key = os.environ.get('POST_CHALLENGES_API_KEY')
     url = 'https://splitgate-challenge-api.azurewebsites.net/api/PostChallenges?code=' + api_key
