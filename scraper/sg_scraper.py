@@ -106,6 +106,7 @@ def SaveWeeklies():
     if IsThursday() or not os.path.exists('ss/weekly1.png'):
         print("Saving new weeklies...")
         # Navigate to Challenges page
+        time.sleep(1)
         pag.click(1200, 35)
         time.sleep(2)
         # Navigate to Weekly Challenges page
