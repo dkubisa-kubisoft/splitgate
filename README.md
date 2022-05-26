@@ -15,4 +15,4 @@ The API exposes the basic mechanisms to create, update and retrieve the challeng
 All challenge and challenge completion data is stored in [Microsoft Azure Table Storage](https://azure.microsoft.com/en-us/services/storage/tables/?&ef_id=Cj0KCQjwhLKUBhDiARIsAMaTLnFMryPUE7Ck9UdGuWc5KF3KUkP5nLA0XeykNhgSsaVx2c-5pBjBFn8aAj7fEALw_wcB:G:s&OCID=AID2200277_SEM_Cj0KCQjwhLKUBhDiARIsAMaTLnFMryPUE7Ck9UdGuWc5KF3KUkP5nLA0XeykNhgSsaVx2c-5pBjBFn8aAj7fEALw_wcB:G:s&gclid=Cj0KCQjwhLKUBhDiARIsAMaTLnFMryPUE7Ck9UdGuWc5KF3KUkP5nLA0XeykNhgSsaVx2c-5pBjBFn8aAj7fEALw_wcB) tables. 
 
 ### Scraper
-The scraper is a Python script that runs the game and obtains the challenges directly from the UI via Optical Character Recognition. Once obtained, the challenges are sent to storage via the API.
+The scraper is a Python script that runs the game, automatically navigates between screens, and obtains the challenges directly from the UI via Optical Character Recognition. Once obtained, the challenges are sent to storage via the API.
