@@ -25,6 +25,5 @@ The OCR on the raw images from the Splitgate UI can occasionally produce incorre
 ## Roadmap
 - Add a requirements.txt
 - Remove deprecated SaveCombinedImage() and corresponding PIL dependency in code and README.md
-- Add OCR preprocessing
 - Update UI scraping for Beta Season 2 UI changes (post June 2, 2022)
 - Update to support any screen resolution
