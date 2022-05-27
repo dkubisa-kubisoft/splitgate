@@ -176,6 +176,16 @@ def DailyCheckIn(reward_center_loc):
 
 def ImageToText(fileName):
     img = cv2.imread(fileName)    
+
+    # Convert to grayscale. Must be done before thresholding.
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    # Daily text is white, so invert to black while thresholding    
+    if "daily" in fileName:
+        img = cv2.threshold(img, 170, 255, cv2.THRESH_BINARY_INV)[1]
+    elif "weekly" in fileName:
+        img = cv2.threshold(img, 100, 255, cv2.THRESH_BINARY)[1]
+
     text = pytesseract.image_to_string(img).replace("\n", " ").rstrip()
     return text
 
