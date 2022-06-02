@@ -19,12 +19,8 @@ Script currently assumes installation to: `C:\Program Files\Tesseract-OCR\tesser
 
 `python sg_scraper.py`
 
-## Known Issues
-The OCR on the raw images from the Splitgate UI can occasionally produce incorrect data. It is planned to add image preprocessing to improve the OCR performance.
-
 ## Roadmap
 - Add a requirements.txt
 - Remove deprecated SaveCombinedImage() and corresponding PIL dependency in code and README.md
-- Add OCR preprocessing
 - Update UI scraping for Beta Season 2 UI changes (post June 2, 2022)
 - Update to support any screen resolution
