@@ -5,6 +5,7 @@ namespace Splitgate.Api.Entities
 
     public class ChallengeEntity : TableEntity
     {
+        public const string DateTimeFormat = "o";
         public const string PartitionKeyDateFormatString = "yyyy-MM-dd";
         public string ChallengeType { get; set; }
         public string Index { get; set; }
@@ -36,8 +37,8 @@ namespace Splitgate.Api.Entities
                 throw new ArgumentException("Missing challenge description.");
             }
 
-            this.StartDateUtc = modelObject.StartDateUtc.ToString("o");
-            this.EndDateUtc = modelObject.EndDateUtc.ToString("o");
+            this.StartDateUtc = modelObject.StartDateUtc.ToString(DateTimeFormat);
+            this.EndDateUtc = modelObject.EndDateUtc.ToString(DateTimeFormat);
             this.ChallengeType = modelObject.ChallengeType;
             this.Index = modelObject.Index;
             this.Description = modelObject.Description;
