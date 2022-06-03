@@ -8,6 +8,21 @@
     src: url(assets/fonts/RevolutionGothic_Bold.otf) format("opentype");
   }
 
+@font-face {
+  font-family: Volte-Regular;
+  src: url(assets/fonts/Volte-Regular.woff) format("woff");
+}
+
+@font-face {
+  font-family: Volte-Bold;
+  src: url(assets/fonts/Volte-Bold.woff) format("woff");
+}
+
+@font-face {
+  font-family: Volte-Semibold;
+  src: url(assets/fonts/Volte-Semibold.woff) format("woff");
+}
+
 h1 {
     color: #369;
     //font-family: Arial, Helvetica, sans-serif;
@@ -62,7 +77,7 @@ h1 {
   
   /* everywhere else */
   * {
-    font-family: 'RevolutionGothicBold', Arial, Helvetica, sans-serif;
+    font-family: 'Volte-Regular', Arial, Helvetica, sans-serif;
   }
 
 .challengesContainer {
