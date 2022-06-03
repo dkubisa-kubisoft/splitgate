@@ -15,14 +15,15 @@ import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # All screen locations & sizes based on 1440p resolution
-daily_width = 350
-daily_height = 48
-weekly_width = 350
-weekly_height = 77
+daily_width = 380
+daily_height = 50
+weekly_width = 365
+weekly_height = 80
 
+play_tab_selected = 'assets/PlayTabSelected_1440p.png'
 reward_center_btn = 'assets/RewardCenter_1440p.png'
-claim_btn = 'assets/ClaimReward_1440p.png'
 daily_check_in_btn = 'assets/DailyCheckIn_1440p.png'
+claim_btn = 'assets/ClaimReward_1440p.png'
 
 
 def RunSplitgate():
@@ -38,17 +39,17 @@ def CloseSplitgate():
     subprocess.call(["taskkill","/F","/IM","PortalWars-Win64-Shipping.exe"])
 
 
-def FindButton(buttonPng):
+def FindOnScreen(png):
     try:
-        btn_loc = pag.locateOnScreen(buttonPng)
-        filename = buttonPng.split('\\')[-1]
-        if btn_loc == None:
+        loc = pag.locateOnScreen(png)
+        filename = png.split('\\')[-1]
+        if loc == None:
             print(f"Not found on screen: {filename}")
     except:
         print("Not found on screen (exception)")
         return None
     
-    return btn_loc
+    return loc
     
 
 def GetToMainMenu():
@@ -61,32 +62,29 @@ def GetToMainMenu():
 
 
     print("Start trying to find main menu")
-    reward_center_loc = None
+    play_tab_loc = None
     attempt = 1
-    while reward_center_loc == None:
+    while play_tab_loc == None:
         pag.keyDown('esc')
         time.sleep(0.1)
         pag.keyUp('esc')
         time.sleep(1)
-        reward_center_loc = FindButton(reward_center_btn)
+        play_tab_loc = FindOnScreen(play_tab_selected)
         attempt += 1
         if attempt >= 50:
             print("Unable to find main menu. Exiting.")
             exit()
 
     print("At main menu")
-    return reward_center_loc
 
 
 def SaveDailies():
     print("Saving dailies...")
-    #daily_x = 2071
-    # OCR on "Play 2 Matches Using Different Armors" gives random words for "Armors" if using 2078
-    daily_x = 2076 
+    daily_x = 1998
 
-    pag.screenshot("ss/daily1.png", region = (daily_x, 200, daily_width, daily_height))
-    pag.screenshot("ss/daily2.png", region = (daily_x, 300, daily_width, daily_height))
-    pag.screenshot("ss/daily3.png", region = (daily_x, 400, daily_width, daily_height))
+    pag.screenshot("ss/daily1.png", region = (daily_x, 219, daily_width, daily_height))
+    pag.screenshot("ss/daily2.png", region = (daily_x, 331, daily_width, daily_height))
+    pag.screenshot("ss/daily3.png", region = (daily_x, 443, daily_width, daily_height))
     
     print("done")
 
@@ -107,21 +105,21 @@ def SaveWeeklies():
         print("Saving new weeklies...")
         # Navigate to Challenges page
         time.sleep(1)
-        pag.click(1200, 35)
+        pag.click(1178, 31)
         time.sleep(2)
         # Navigate to Weekly Challenges page
-        pag.click(1619, 697)
+        pag.click(1518, 544)
         time.sleep(2)
         
         # Save Weekly challenges from screen
-        weekly_y = 412
+        weekly_y = 575
         
-        weekly1 = pag.screenshot("ss/weekly1.png", region = (98, weekly_y, weekly_width, weekly_height))
-        weekly2 = pag.screenshot("ss/weekly2.png", region = (506, weekly_y, weekly_width, weekly_height))
-        weekly3 = pag.screenshot("ss/weekly3.png", region = (911, weekly_y, weekly_width, weekly_height))
-        weekly4 = pag.screenshot("ss/weekly4.png", region = (1317, weekly_y, weekly_width, weekly_height))
-        weekly5 = pag.screenshot("ss/weekly5.png", region = (1720, weekly_y, weekly_width, weekly_height))
-        weekly6 = pag.screenshot("ss/weekly6.png", region = (2125, weekly_y, weekly_width, weekly_height))
+        weekly1 = pag.screenshot("ss/weekly1.png", region = (118, weekly_y, weekly_width, weekly_height))
+        weekly2 = pag.screenshot("ss/weekly2.png", region = (511, weekly_y, weekly_width, weekly_height))
+        weekly3 = pag.screenshot("ss/weekly3.png", region = (904, weekly_y, weekly_width, weekly_height))
+        weekly4 = pag.screenshot("ss/weekly4.png", region = (1297, weekly_y, weekly_width, weekly_height))
+        weekly5 = pag.screenshot("ss/weekly5.png", region = (1690, weekly_y, weekly_width, weekly_height))
+        weekly6 = pag.screenshot("ss/weekly6.png", region = (2083, weekly_y, weekly_width, weekly_height))
         print("done")
     else:
         print("Weeklies already up-to-date.")
@@ -151,24 +149,36 @@ def SaveCombinedImage(dailies, weeklies):
     im.save("ss/all.png")
 
 
-def DailyCheckIn(reward_center_loc):
-    print("Clicking on Reward Center")
-    pag.click(reward_center_loc)
-    time.sleep(1)
-    daily_loc = FindButton(daily_check_in_btn)
-    if daily_loc != None:
-        print("Clicking on Daily Check-In")
-        pag.moveTo(daily_loc)
+def DailyCheckIn():
+
+    # Bring up the menu
+    pag.keyDown('esc')
+    time.sleep(0.1)
+    pag.keyUp('esc')
+    
+    # Find and press the Reward Center button
+    reward_center_loc = FindOnScreen(reward_center_btn)
+    if reward_center_loc != None:
+        print("Clicking on Reward Center")
+        pag.moveTo(reward_center_loc)
         time.sleep(1)
-        pag.click(daily_loc)
-        time.sleep(2)
-        claim_btn_loc = FindButton(claim_btn)
-        if claim_btn_loc != None:
-            pag.moveTo(claim_btn_loc)
+        pag.click(reward_center_loc)
+        time.sleep(1)
+
+        daily_loc = FindOnScreen(daily_check_in_btn)
+        if daily_loc != None:
+            print("Clicking on Daily Check-In")
+            pag.moveTo(daily_loc)
             time.sleep(1)
-            print("Clicking on Claim Reward")
-            pag.click(claim_btn_loc)
-        time.sleep(2)
+            pag.click(daily_loc)
+            time.sleep(2)
+            claim_btn_loc = FindOnScreen(claim_btn)
+            if claim_btn_loc != None:
+                pag.moveTo(claim_btn_loc)
+                time.sleep(1)
+                print("Clicking on Claim Reward")
+                pag.click(claim_btn_loc)
+            time.sleep(1)
     
     # Be a good neighbor and put the application back in the state we started in.
     GetToMainMenu()
@@ -180,14 +190,26 @@ def ImageToText(fileName):
     # Convert to grayscale. Must be done before thresholding.
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # Daily text is white, so invert to black while thresholding    
-    if "daily" in fileName:
-        img = cv2.threshold(img, 170, 255, cv2.THRESH_BINARY_INV)[1]
-    elif "weekly" in fileName:
-        img = cv2.threshold(img, 100, 255, cv2.THRESH_BINARY)[1]
+    # Text is white, so invert to black text on white background for thresholding
+    img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY_INV)[1]
 
     text = pytesseract.image_to_string(img).replace("\n", " ").rstrip()
     return text
+
+
+def BetaSeason2Challenges():
+    return ['Reach Pro level 1',
+    'Play 300 Matches',
+    'Get 3,000 Kills',
+    'Unlock a badge',
+    'Inflict 150,000 Damage',
+    'Get 200 Headshots',
+    'Win 30 matches in TDM',
+    'Play 50 Ranked Matches',
+    'Shut down 100 enemy portals',
+    'Get 1 Collateral Kill',
+    'Get 50 Revenge kills',
+    'Get 300 kills with the AR']
 
 
 def BetaSeason1Challenges():
@@ -288,12 +310,12 @@ def PostToApi():
             challenges.append( ApiChallenge("weekly", idx + 1, description, weekly_start_time, weekly_end_time) )
 
     # Season Challenges
-    # This only needed to be sent once for the season. Disabled by default.
+    # This only needed to be sent once for the season stage. Disabled by default.
     if False:
-        season_challenges = BetaSeason1Challenges()
+        season_challenges = BetaSeason2Challenges()
         # Dates hard-coded for Beta Season 1
-        season_start_time = datetime.datetime(2022, 1, 1, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
-        season_end_time = datetime.datetime(2022, 6, 2, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
+        season_start_time = datetime.datetime(2022, 6, 2, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
+        season_end_time = datetime.datetime(2022, 9, 2, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
         for idx in range(len(season_challenges)):
             challenges.append( ApiChallenge("seasonal", idx + 1, season_challenges[idx], season_start_time, season_end_time) )
 
@@ -319,8 +341,8 @@ def main():
         os.makedirs('ss')
 
     RunSplitgate()
-    reward_center_loc = GetToMainMenu()
-    DailyCheckIn(reward_center_loc)
+    GetToMainMenu()
+    DailyCheckIn()
     SaveDailies()
     SaveWeeklies()
     CloseSplitgate()
