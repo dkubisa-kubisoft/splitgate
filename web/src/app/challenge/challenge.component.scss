@@ -4,10 +4,9 @@ h2 {
 .challenge {
     border: 2px solid goldenrod;
     text-align: center;
-    
     padding: 10px;
     font-size: large;
-    margin-bottom: 5px;
+    margin: 2px 0;
     background-color: #eaf5ff;
 }
 
@@ -53,7 +52,7 @@ h2 {
   }
 
 .panel {
-    padding: 0 10px;
+    padding: 10px 10px;
     overflow: hidden;
     border: 3px solid #111;
     background-color: #122;
@@ -62,5 +61,7 @@ h2 {
 
 .closed {
     max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
     transition: max-height 0.2s ease-out;
 }
