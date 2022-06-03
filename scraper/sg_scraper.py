@@ -23,7 +23,7 @@ weekly_height = 80
 play_tab_selected = 'assets/PlayTabSelected_1440p.png'
 reward_center_btn = 'assets/RewardCenter_1440p.png'
 daily_check_in_btn = 'assets/DailyCheckIn_1440p.png'
-claim_btn = 'assets/ClaimReward_1440p.png' # TODO: File not yet updated for Beta Season 2
+claim_btn = 'assets/ClaimReward_1440p.png'
 
 
 def RunSplitgate():
