@@ -1,3 +1,5 @@
+@import './vars.scss';
+
 $challenge-container-background-color: #010f16;
 
 h2 {
@@ -20,7 +22,6 @@ h2 {
     background: rgb(2,115,147);
     background: linear-gradient(160deg, rgba(2,115,147,1) 27%, rgba(46,181,197,1) 65%);
     color: #FFF;
-    font-weight: 600;
 }
 
 .challenge:hover {
@@ -82,4 +83,10 @@ h2 {
     padding-top: 0;
     padding-bottom: 0;
     transition: max-height 0.2s ease-out;
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .challenge {
+        font-weight: 600;
+    }
 }
