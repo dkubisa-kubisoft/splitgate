@@ -1,17 +1,39 @@
-<h2>Daily Challenges</h2>
-<p>Resets in {{dailyExpiryTime}}</p>
-<div class="challenge noselect" *ngFor="let challenge of dailyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
-    {{ challenge.description }}
+<div class="accordion noselect active" #accordion>
+    Daily Challenges
+    <br />
+    <span class="reset">Resets in {{dailyExpiryTime}}</span>
+</div>
+<div class="panel">
+    <div class="challenge noselect" *ngFor="let challenge of dailyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+        {{ challenge.description }}
+    </div>
+</div>
+<hr />
+<div class="accordion noselect active" #accordion>
+    Weekly Challenges
+    <br />
+    <span class="reset">Resets in {{weeklyExpiryTime}}</span>
+</div>
+<div class="panel">
+    <div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+        {{ challenge.description }}
+    </div>
+</div>
+<hr />
+<div class="accordion noselect active" #accordion>
+    Season Challenges
+    <br />
+    <span class="reset">Resets in {{seasonExpiryTime}}</span>
+</div>
+<div class="panel">
+    <div class="challenge noselect" *ngFor="let challenge of seasonChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+        {{ challenge.description }}
+    </div>
 </div>
 
-<h2>Weekly Challenges</h2>
-<p>Resets in {{weeklyExpiryTime}}</p>
-<div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
-    {{ challenge.description }}
-</div>
 
-<h2>Season Challenges</h2>
-<p>Resets in {{seasonExpiryTime}}</p>
-<div class="challenge noselect" *ngFor="let challenge of seasonChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
-    {{ challenge.description }}
-</div>
+
+
+
+
+

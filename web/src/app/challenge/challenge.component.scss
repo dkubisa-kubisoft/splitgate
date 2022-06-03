@@ -1,5 +1,5 @@
 h2 {
-    margin-bottom: 5px;
+    margin: 0 0 5px 0;
 }
 .challenge {
     border: 2px solid goldenrod;
@@ -19,10 +19,48 @@ h2 {
     background-color: gold;
 }
 
-p {
+.reset {
     color: gold;
     font-family: Verdana;
-    margin: 2px 0;
-    font-size: smaller;
+    margin: 0;
+    font-size: small;
+}
+
+/* Accordion Classes */
+.accordion {
+    color: #EEE;
+    font-size: x-large;
+    font-weight: lighter;
+    margin-top: 5px;
+    cursor: pointer;
+    transition: 0.4s;
+    padding: 10px 10px 10px 10px;
+    background-color: #111;
+}
+
+.accordion:after {
+    content: '\002B';
+    float:right;
     font-weight: bold;
+    margin-left: 5px;
+    color: #EEE;
+    font-size: 15px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.active:after {
+    content: "\2212";
+  }
+
+.panel {
+    padding: 0 10px;
+    overflow: hidden;
+    border: 3px solid #111;
+    background-color: #122;
+    transition: max-height 0.2s ease-out;
+}
+
+.closed {
+    max-height: 0;
+    transition: max-height 0.2s ease-out;
 }

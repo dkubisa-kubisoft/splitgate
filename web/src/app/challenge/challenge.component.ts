@@ -1,13 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Challenge } from '../challenge';
 import { ChallengeService } from '../challenge.service';
+
 
 @Component({
   selector: 'app-challenge',
   templateUrl: './challenge.component.html',
   styleUrls: ['./challenge.component.scss']
 })
-export class ChallengesComponent implements OnInit {
+export class ChallengesComponent implements OnInit, AfterViewInit {
+  @ViewChildren("accordion", {read: ElementRef}) accordions: QueryList<ElementRef>;
+
   dailyExpiryTime: string = "? hrs, ? min";
   dailyChallenges: Challenge[] = [];
 
@@ -17,7 +20,10 @@ export class ChallengesComponent implements OnInit {
   seasonExpiryTime: string = "? hrs, ? min";
   seasonChallenges: Challenge[] = [];
 
-  constructor(private challengeService: ChallengeService) { }
+  constructor(private challengeService: ChallengeService) 
+  { 
+    this.accordions = new QueryList<ElementRef>();
+  }
 
   getCurrentChallenges(): void {
     this.challengeService.getCurrentChallenges()
@@ -42,8 +48,16 @@ export class ChallengesComponent implements OnInit {
           this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
           this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
           this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
-        }
-        );
+        });
+  }
+
+  expandAccordions() {
+    this.accordions.forEach(accordion => 
+      {
+        let element = accordion.nativeElement;
+        let panel = element.nextElementSibling;
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      });
   }
 
   toggleChallengeCompletion(challenge: Challenge): void {
@@ -87,11 +101,35 @@ export class ChallengesComponent implements OnInit {
 
   ngOnInit(): void {
     this.getCurrentChallenges();
-
+    
     setInterval(() => {
       this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
       this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
       this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
     }, 31000);
+  }
+
+  ngAfterViewInit(): void {
+    
+    this.accordions.forEach(accordion => 
+      {
+        let element = accordion.nativeElement;
+        let panel = element.nextElementSibling;
+
+        element.addEventListener("click", 
+          function() 
+          { 
+            element.classList.toggle("active");
+            panel.classList.toggle("closed");
+
+            // if (panel.style.maxHeight) {
+            //   panel.style.maxHeight = null;
+            // }
+            // else {
+            //   panel.style.maxHeight = panel.scrollHeight + "px";
+            // }
+
+          });
+      });
   }
 }
