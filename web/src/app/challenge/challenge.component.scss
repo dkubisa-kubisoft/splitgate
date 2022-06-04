@@ -2,15 +2,15 @@
 
 $challenge-container-background-color: #010f16;
 
-h2 {
-    margin: 0 0 5px 0;
-}
-
 .challenge-title {
     color: #EEE;
-    font-family: Volte-Semibold;
+    font-family: DexaProBlack, Volte-Semibold;
     font-size: larger;
     font-weight: lighter;
+
+    .completed {
+        color: gold;
+    }
 }
 
 .challenge {
@@ -42,7 +42,6 @@ h2 {
 
 .reset {
     color: gold;
-    font-family: Verdana;
     margin: 0;
     font-size: small;
 }
@@ -68,7 +67,7 @@ h2 {
 
 .active:after {
     content: "\2212";
-  }
+}
 
 .panel {
     padding: 0 10px 10px 10px;

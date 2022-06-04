@@ -1,7 +1,7 @@
 <div class="accordion noselect active" #accordion>
     <span class="challenge-title">DAILY CHALLENGES</span>
     <br />
-    <span class="reset">Resets in {{dailyExpiryTime}}</span>
+    <span class="reset">{{dailyExpiryMsg}}</span>
 </div>
 <div class="panel">
     <div class="challenge noselect" *ngFor="let challenge of dailyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
@@ -12,7 +12,7 @@
 <div class="accordion noselect active" #accordion>
     <span class="challenge-title">WEEKLY CHALLENGES</span>
     <br />
-    <span class="reset">Resets in {{weeklyExpiryTime}}</span>
+    <span class="reset">{{weeklyExpiryMsg}}</span>
 </div>
 <div class="panel">
     <div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
@@ -23,7 +23,7 @@
 <div class="accordion noselect active" #accordion>
     <span class="challenge-title">SEASON CHALLENGES</span>
     <br />
-    <span class="reset">Resets in {{seasonExpiryTime}}</span>
+    <span class="reset">{{seasonExpiryMsg}}</span>
 </div>
 <div class="panel">
     <div class="challenge noselect" *ngFor="let challenge of seasonChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">

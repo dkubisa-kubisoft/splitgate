@@ -11,14 +11,17 @@ import { ChallengeService } from '../challenge.service';
 export class ChallengesComponent implements OnInit, AfterViewInit {
   @ViewChildren("accordion", {read: ElementRef}) accordions: QueryList<ElementRef>;
 
-  dailyExpiryTime: string = "? hrs, ? min";
+  dailyExpiryMsg: string = "Resets in ? hrs, ? min";
   dailyChallenges: Challenge[] = [];
+  allDailysCompleted: boolean = false;
 
-  weeklyExpiryTime: string = "? hrs, ? min";
+  weeklyExpiryMsg: string = "Resets in ? hrs, ? min";
   weeklyChallenges: Challenge[] = [];
+  allWeeklysCompleted: boolean = false;
 
-  seasonExpiryTime: string = "? hrs, ? min";
+  seasonExpiryMsg: string = "Resets in ? hrs, ? min";
   seasonChallenges: Challenge[] = [];
+  allSeasonalsCompleted: boolean = false;
 
   constructor(private challengeService: ChallengeService) 
   { 
@@ -45,9 +48,13 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
             }
           }
 
-          this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-          this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-          this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+          if(this.dailyChallenges.every(c => c.completed === true)) { this.allDailysCompleted = true; }
+          if(this.weeklyChallenges.every(c => c.completed === true)) { this.allWeeklysCompleted = true; }
+          if(this.seasonChallenges.every(c => c.completed === true)) { this.allSeasonalsCompleted = true; }
+
+          this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+          this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+          this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
         });
   }
 
@@ -103,9 +110,9 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     this.getCurrentChallenges();
     
     setInterval(() => {
-      this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-      this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-      this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+      this.dailyExpiryMsg = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+      this.weeklyExpiryMsg = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+      this.seasonExpiryMsg = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
     }, 31000);
   }
 
