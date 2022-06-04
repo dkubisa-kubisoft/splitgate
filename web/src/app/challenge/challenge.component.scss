@@ -1,41 +1,58 @@
-h2 {
-    margin: 0 0 5px 0;
+@import './vars.scss';
+
+$challenge-container-background-color: #010f16;
+
+.challenge-title {
+    color: #EEE;
+    font-family: DexaProBlack, Volte-Semibold;
+    font-size: larger;
+    font-weight: lighter;
+
+    .completed {
+        color: gold;
+    }
 }
+
 .challenge {
-    border: 2px solid goldenrod;
+    border: 2px solid #0dd7eb;
     text-align: center;
-    
     padding: 10px;
-    font-size: large;
-    margin-bottom: 5px;
-    background-color: #eaf5ff;
+    font-size: medium;
+    margin: 2px 0;
+    background: rgb(2,115,147);
+    background: linear-gradient(160deg, rgba(2,115,147,1) 27%, rgba(46,181,197,1) 65%);
+    color: #FFF;
 }
 
 .challenge:hover {
     cursor: pointer;
+    opacity: 90%;
 }
 
 .completed {
+    background: none;
     background-color: gold;
+    border-color: goldenrod;
+    color: #000;
+}
+
+.completed:hover {
+    border-color: rgb(255, 240, 157);
 }
 
 .reset {
     color: gold;
-    font-family: Verdana;
     margin: 0;
     font-size: small;
 }
 
 /* Accordion Classes */
 .accordion {
-    color: #EEE;
-    font-size: x-large;
-    font-weight: lighter;
     margin-top: 5px;
     cursor: pointer;
     transition: 0.4s;
     padding: 10px 10px 10px 10px;
-    background-color: #111;
+    background-color: $challenge-container-background-color;
 }
 
 .accordion:after {
@@ -50,17 +67,25 @@ h2 {
 
 .active:after {
     content: "\2212";
-  }
+}
 
 .panel {
-    padding: 0 10px;
+    padding: 0 10px 10px 10px;
     overflow: hidden;
-    border: 3px solid #111;
-    background-color: #122;
+    border: 3px solid $challenge-container-background-color;
+    background-color: $challenge-container-background-color;
     transition: max-height 0.2s ease-out;
 }
 
 .closed {
     max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
     transition: max-height 0.2s ease-out;
+}
+
+@media (max-width: $breakpoint-mobile) {
+    .challenge {
+        font-weight: 600;
+    }
 }
