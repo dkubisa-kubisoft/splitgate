@@ -96,10 +96,6 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     // 4- Keep only seconds not extracted to minutes:
     seconds = seconds % 60;
 
-    if (seconds >= 30) {
-        minutes = minutes + 1;
-    }
-
     if (hours == 0) { return minutes + " min"; }
     if (days == 0) { return hours + " hrs, " + minutes + " min"; }
     if (days == 1) { return days + " day, " + hours + " hrs"; }
@@ -110,10 +106,10 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     this.getCurrentChallenges();
     
     setInterval(() => {
-      this.dailyExpiryMsg = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-      this.weeklyExpiryMsg = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-      this.seasonExpiryMsg = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
-    }, 31000);
+      this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+      this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+      this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+    }, 2000);
   }
 
   ngAfterViewInit(): void {
@@ -128,14 +124,6 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
           { 
             element.classList.toggle("active");
             panel.classList.toggle("closed");
-
-            // if (panel.style.maxHeight) {
-            //   panel.style.maxHeight = null;
-            // }
-            // else {
-            //   panel.style.maxHeight = panel.scrollHeight + "px";
-            // }
-
           });
       });
   }
