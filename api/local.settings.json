@@ -3,5 +3,8 @@
   "Values": {
     "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=splitgatestorage;AccountKey=7xHm/ZwKnKHa31auSQCI96TNjCNuh8qNyKie8rzi8WfJ3Yd7gEvE6EqJzxQxGl7sBeN93z+sccJ3+AStFh8RkQ==;BlobEndpoint=https://splitgatestorage.blob.core.windows.net/;QueueEndpoint=https://splitgatestorage.queue.core.windows.net/;TableEndpoint=https://splitgatestorage.table.core.windows.net/;FileEndpoint=https://splitgatestorage.file.core.windows.net/;",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+  },
+  "Host": {
+    "CORS": "*"
   }
 }

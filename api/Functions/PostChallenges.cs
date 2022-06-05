@@ -15,16 +15,36 @@ namespace Splitgate.Api.Functions
     using Splitgate.Api.Entities;
     using Splitgate.Api.Request;
     
+    /// <summary>
+    /// Azure function for posting a challenge.
+    /// </summary>
     public class PostChallenges
     {
+        /// <summary>
+        /// The name of the Azure function.
+        /// </summary>
         private const string FunctionName = "PostChallenges";
 
-        private TableServiceClient tableServicesClient { get; set; }
+        /// <summary>
+        /// The client to use to communicate with Azure Table Storage.
+        /// </summary>
+        private TableServiceClient tableServicesClient;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PostChallenges" /> class.
+        /// </summary>
+        /// <param name="tableServiceClient">The table service client.</param>
         public PostChallenges(TableServiceClient tableServiceClient) 
         {
             this.tableServicesClient = tableServiceClient ?? throw new ArgumentNullException(nameof(tableServiceClient));
         }
 
+        /// <summary>
+        /// Azure function to create or update a challenge.
+        /// </summary>
+        /// <param name="req">The request.</param>
+        /// <param name="log">The logger.</param>
+        /// <returns>The <see cref="Task">.</returns>
         [FunctionName(FunctionName)]
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req, ILogger log)
         {
@@ -58,29 +78,39 @@ namespace Splitgate.Api.Functions
                 await this.tableServicesClient.CreateTableIfNotExistsAsync(TableNames.Challenges).ConfigureAwait(false);
                 var challengesTableClient = tableServicesClient.GetTableClient(TableNames.Challenges);
                 
-                foreach( var challenge in request.Challenges) 
+                foreach( var challengeModel in request.Challenges) 
                 {
-                    var newChallenge = new ChallengeEntity(challenge);
+                    var newChallenge = new ChallengeEntity(challengeModel);
 
-                    ChallengeEntity existingChallenge = null;
+                    ChallengeEntity existingEntity = null;
 
                     try 
                     {
-                        existingChallenge = (await challengesTableClient.GetEntityAsync<ChallengeEntity>("1", newChallenge.RowKey).ConfigureAwait(false))?.Value;
+                        existingEntity = (await challengesTableClient.GetEntityAsync<ChallengeEntity>("1", newChallenge.RowKey).ConfigureAwait(false))?.Value;
                     }
                     catch (RequestFailedException) {}
 
-                    if (existingChallenge != null && existingChallenge.Description != newChallenge.Description) 
+                    if (existingEntity != null) 
                     {
-                        // The new challenge replaces an existing challenge. Purge the completions for the existing one since this one is different.
-                        await PurgeCompletions(existingChallenge).ConfigureAwait(false);
+                        // The posted challenge replaces an existing challenge
+                        if (request.SuppressCompletionPurge == false)
+                        {
+                            await this.PurgeCompletions(existingEntity.ChallengeType, existingEntity.Index).ConfigureAwait(false);
+                        }
 
-                        // Archive the old challenge
-                        await ArchiveChallenge(existingChallenge, challengesTableClient).ConfigureAwait(false);
+                        // Archive the entity before updating
+                        await this.ArchiveChallenge(existingEntity).ConfigureAwait(false);
+
+                        // Load the existing entity with new values from the request
+                        existingEntity.Load(challengeModel);
+
+                        await challengesTableClient.UpdateEntityAsync<ChallengeEntity>(existingEntity, Azure.ETag.All, TableUpdateMode.Replace);
                     }
-
-                    // Add the new challenge
-                    await challengesTableClient.AddEntityAsync<ChallengeEntity>(newChallenge).ConfigureAwait(false);
+                    else 
+                    {
+                        // No existing challenge found, add the new challenge
+                        await challengesTableClient.AddEntityAsync<ChallengeEntity>(newChallenge).ConfigureAwait(false);
+                    }
                 }
             
                 return new OkResult();
@@ -93,14 +123,18 @@ namespace Splitgate.Api.Functions
         }
 
         /// <summary>
-        /// Archives a challenge
+        /// Archives a challenge.
         /// </summary>
         /// <param name="challenge">The challenge to archive.</param>
-        /// <param name="challengesTableClient">Client to the Challenges table.</param>
-        private async Task ArchiveChallenge(ChallengeEntity challenge, TableClient challengesTableClient) 
+        private async Task ArchiveChallenge(ChallengeEntity challenge)
         {
             try 
             {
+                if (challenge == null)
+                {
+                    throw new ArgumentNullException(nameof(challenge));
+                }
+
                 await this.tableServicesClient.CreateTableIfNotExistsAsync(TableNames.ChallengeArchive).ConfigureAwait(false);
                 var challengeArchiveTableClient = tableServicesClient.GetTableClient(TableNames.ChallengeArchive);
 
@@ -110,26 +144,23 @@ namespace Splitgate.Api.Functions
             {
                 // Record for today already exists in the archive, ignore
             }
-            finally
-            {
-                // Delete the archived challenge
-                await challengesTableClient.DeleteEntityAsync(challenge.PartitionKey, challenge.RowKey).ConfigureAwait(false);
-            }
         }
 
         /// <summary>
         /// Purges the completions of an existing challenge.
         /// </summary>
-        /// <param name="challenge">The challenge.</param>
-        private async Task PurgeCompletions(ChallengeEntity challenge) 
+        /// <param name="challengeType">The challenge challenge type of the challenge.</param>
+        /// <param name="index">The index of the challenge.</param>
+        /// <returns>The <see cref="Task" />.</returns>
+        private async Task PurgeCompletions(string challengeType, int index) 
         {
             var completedChallengesTableClient = tableServicesClient.GetTableClient(TableNames.CompletedChallenges);
             var challengesTableClient = tableServicesClient.GetTableClient(TableNames.Challenges);
 
             // The new challenge replaces an existing one, wipe the completions for the old one and then delete it before adding the replacement
-            var completions = completedChallengesTableClient.Query<ChallengeEntity>(c => c.RowKey == challenge.RowKey);
+            var completions = completedChallengesTableClient.Query<ChallengeEntity>(c => c.RowKey == $"{challengeType},{index}");
 
-            foreach( var completion in completions) 
+            foreach( var completion in completions)
             {
                 // Delete the completions
                 await completedChallengesTableClient.DeleteEntityAsync(completion.PartitionKey, completion.RowKey).ConfigureAwait(false);
