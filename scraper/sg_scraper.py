@@ -8,8 +8,6 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import subprocess
 import time
-from PIL import Image
-from PIL import ImageDraw
 import cv2
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
@@ -123,30 +121,6 @@ def SaveWeeklies():
         print("done")
     else:
         print("Weeklies already up-to-date.")
-
-
-def SaveCombinedImage(dailies, weeklies):
-    """Construct one combined image consisting of daily and weekly challenges
-
-    This was from the initial prototype. Now that text is being OCR-ed and sent to an API, this
-    combined image is no longer used.
-    """
-    im = Image.new('RGB', (weekly_width + 4, (daily_height*3) + (weekly_height*6) + 16 + 2*11))
-    im.paste(dailies[0],  (2, 2))
-    im.paste(dailies[1],  (2, daily_height + 2*2))
-    im.paste(dailies[2],  (2, daily_height*2 + 2*3))
-    im.paste(weeklies[0], (2, daily_height*3 + 2*4))
-    im.paste(weeklies[1], (2, daily_height*3 + weekly_height + 2*5))
-    im.paste(weeklies[2], (2, daily_height*3 + weekly_height*2 + 2*6))
-    im.paste(weeklies[3], (2, daily_height*3 + weekly_height*3 + 2*7))
-    im.paste(weeklies[4], (2, daily_height*3 + weekly_height*4 + 2*8))
-    im.paste(weeklies[5], (2, daily_height*3 + weekly_height*5 + 2*9))
-    
-    last_updated = "Last Updated " + datetime.datetime.now().strftime("%a %b %d, %Y at %H:%M EST")
-    draw = ImageDraw.Draw(im)
-    draw.text((10, daily_height*3 + weekly_height*6 + 2*10), last_updated, (255, 255, 255))
-    
-    im.save("ss/all.png")
 
 
 def DailyCheckIn():

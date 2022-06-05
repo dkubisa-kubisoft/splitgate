@@ -10,7 +10,6 @@ Instructions are based on a Windows 10 installation running Splitgate via Steam 
 - Install Python 3.10 (developed using 3.10.4)
 - Install Python dependencies
   - pip3 install pyautogui
-  - pip3 install pil
 - Install [Tesseract](https://tesseract-ocr.github.io/tessdoc/Installation.html) for OCR capability.
 Script currently assumes installation to: `C:\Program Files\Tesseract-OCR\tesseract.exe`
 - Install [Splitgate via Steam](https://store.steampowered.com/app/677620/Splitgate/)
@@ -21,5 +20,4 @@ Script currently assumes installation to: `C:\Program Files\Tesseract-OCR\tesser
 
 ## Roadmap
 - Add a requirements.txt
-- Remove deprecated SaveCombinedImage() and corresponding PIL dependency in code and README.md
 - Update to support any screen resolution
