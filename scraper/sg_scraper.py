@@ -15,8 +15,8 @@ import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # All screen locations & sizes based on 1440p resolution
-daily_width = 380
-daily_height = 50
+daily_width = 390
+daily_height = 60
 weekly_width = 365
 weekly_height = 80
 
@@ -80,11 +80,11 @@ def GetToMainMenu():
 
 def SaveDailies():
     print("Saving dailies...")
-    daily_x = 1998
+    daily_x = 1990
 
-    pag.screenshot("ss/daily1.png", region = (daily_x, 219, daily_width, daily_height))
-    pag.screenshot("ss/daily2.png", region = (daily_x, 331, daily_width, daily_height))
-    pag.screenshot("ss/daily3.png", region = (daily_x, 443, daily_width, daily_height))
+    pag.screenshot("ss/daily1.png", region = (daily_x, 210, daily_width, daily_height))
+    pag.screenshot("ss/daily2.png", region = (daily_x, 335, daily_width, daily_height))
+    pag.screenshot("ss/daily3.png", region = (daily_x, 435, daily_width, daily_height))
     
     print("done")
 
@@ -189,12 +189,30 @@ def ImageToText(fileName):
 
     # Convert to grayscale. Must be done before thresholding.
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Find & use best threshold based on confidence level
+    best_min_prob = 0.0
+    best_text = ""
+    for thresh in range(100, 201, 10):
+        # Text is white, so invert to black text on white background for thresholding
+        img_thresh = cv2.threshold(img, thresh, 255, cv2.THRESH_BINARY_INV)[1]
+        d = pytesseract.image_to_data(img_thresh, output_type=pytesseract.Output.DICT)
+        try:
+            df = [float(i) for i in d['conf']]
+            probs = [prob for prob in df if prob >= 0]
+            min_prob = min(probs)
+            if min_prob > best_min_prob:
+                text = pytesseract.image_to_string(img_thresh)
+                text = text.replace("\n", " ").rstrip()
+                if text != "":
+                    best_text = text
+                    best_min_prob = min_prob
+                    #print(f'{thresh} : {min_prob}  "{text}"  {probs}')
+        except:
+            pass
 
-    # Text is white, so invert to black text on white background for thresholding
-    img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY_INV)[1]
-
-    text = pytesseract.image_to_string(img).replace("\n", " ").rstrip()
-    return text
+    #print(best_text)
+    return best_text
 
 
 def BetaSeason2Challenges():
