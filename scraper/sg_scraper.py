@@ -204,60 +204,6 @@ def BetaSeason2Challenges():
     'Get 300 kills with the AR']
 
 
-def BetaSeason1Challenges():
-    """ Input Season Challenges by hand rather than via OCR for now since they change infrequently
-    """
-
-    return ['Score Highest on your team in 100 Matches',
-    'Play 300 Matches',
-    'Play 50 Matches of Featured Game Modes',
-    'Get 2,500 Kills',
-    'Win 25 Matches in a Party',
-    'Land 7500 Shots',
-    'Win 10 Matches in 5 Different Playlists',
-    'Play 100 Ranked Matches',
-    'Inflict 150,000 Damage',
-    'Go Through 50 Friendly Portals',
-    'Get 35 King Slayer Kills',
-    'Get 25 First Blood Kills',
-    'Get 1,000 Kills',
-    'Win 30 Matches with the Most Kills',
-    'Play 10 Matches in 1 Day',
-    'Get 150 Headshot Kills',
-    'Win 25 Matches with the Highest Score',
-    'Have the Most Assist Kills in 5 Matches',
-    'Get a Portal Kill',
-    'Get 1500 Score in Team Objective',
-    'Get 75 Double Kills',
-    'Get 100 Kills Through Portals',
-    'Get A Collateral Kill',
-    'Get 100 Melee Kills',
-    'Get 150 Assist Kills',
-    'Get 500 Score in Sniper Frenzy',
-    'Get the Most Kills on your team in 15 Matches',
-    'Get 50 Revenge Kills',
-    'Inflict 50,000 Damage',
-    'Win a Match in 6 Different Playlists',
-    'Win 25 Ranked Matches',
-    'Emote in 25 Matches',
-    'Win 75 Matches',
-    'Win 3 matches of FFA Brawl',
-    'Win a Match on 10 Different Maps',
-    'Win a Match with 10 Assist Kills',
-    'Play 25 Quick Play Matches',
-    'Win 5 Matches with Double the Score of the Opposing Team',
-    'Get a Triple Kill',
-    'Get 50 Kills with the BFB or Railgun',
-    'Play 50 Matches',
-    'Win a Match with the Highest Score and Most Kills',
-    'Get 75 Kills with a Sniper or Shotgun',
-    'Get the Highest Score on your team in 20 Matches',
-    'Get 100 Kills with SMG or Battle Rifle',
-    'Win a Match of 10 Different Game Modes',
-    'Get 300 Kills',
-    'Get 100 Assist Kills or Revenge Kills']
-
-
 def DatetimeToString(dt):
     """ Date/time format specified by the PostChallenges API
     """
