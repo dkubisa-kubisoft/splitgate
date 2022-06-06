@@ -31,7 +31,7 @@ namespace Splitgate.Api.Functions
             var completedChallengesTable = this.tableServiceClient.GetTableClient(TableNames.CompletedChallenges);
             var ip = req.HttpContext.Connection.RemoteIpAddress.ToString();
 
-            var challengeEntities = challengesTable.Query<ChallengeEntity>($"PartitionKey eq '1'");
+            var challengeEntities = challengesTable.Query<ChallengeEntity>($"PartitionKey eq '1' and EndDateUtc gt '{DateTime.UtcNow.ToString(ChallengeEntity.DateTimeFormat)}'");
 
             // Get the completed challenges for the caller's ip
             var completedChallenges = completedChallengesTable.Query<Splitgate.Api.Entities.TableEntity>($"PartitionKey eq '{ip}'");

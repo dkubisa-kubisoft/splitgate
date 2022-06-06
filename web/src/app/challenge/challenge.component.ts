@@ -1,23 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChildren, QueryList, ElementRef } from '@angular/core';
 import { Challenge } from '../challenge';
 import { ChallengeService } from '../challenge.service';
+
 
 @Component({
   selector: 'app-challenge',
   templateUrl: './challenge.component.html',
   styleUrls: ['./challenge.component.scss']
 })
-export class ChallengesComponent implements OnInit {
-  dailyExpiryTime: string = "? hrs, ? min";
+export class ChallengesComponent implements OnInit, AfterViewInit {
+  @ViewChildren("accordion", {read: ElementRef}) accordions: QueryList<ElementRef>;
+
+  dailyExpiryMsg: string = "Resets in ? hrs, ? min";
   dailyChallenges: Challenge[] = [];
+  allDailysCompleted: boolean = false;
 
-  weeklyExpiryTime: string = "? hrs, ? min";
+  weeklyExpiryMsg: string = "Resets in ? hrs, ? min";
   weeklyChallenges: Challenge[] = [];
+  allWeeklysCompleted: boolean = false;
 
-  seasonExpiryTime: string = "? hrs, ? min";
+  seasonExpiryMsg: string = "Resets in ? hrs, ? min";
   seasonChallenges: Challenge[] = [];
+  allSeasonalsCompleted: boolean = false;
 
-  constructor(private challengeService: ChallengeService) { }
+  constructor(private challengeService: ChallengeService) 
+  { 
+    this.accordions = new QueryList<ElementRef>();
+  }
 
   getCurrentChallenges(): void {
     this.challengeService.getCurrentChallenges()
@@ -39,11 +48,23 @@ export class ChallengesComponent implements OnInit {
             }
           }
 
-          this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-          this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-          this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
-        }
-        );
+          if(this.dailyChallenges.every(c => c.completed === true)) { this.allDailysCompleted = true; }
+          if(this.weeklyChallenges.every(c => c.completed === true)) { this.allWeeklysCompleted = true; }
+          if(this.seasonChallenges.every(c => c.completed === true)) { this.allSeasonalsCompleted = true; }
+
+          this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+          this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+          this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+        });
+  }
+
+  expandAccordions() {
+    this.accordions.forEach(accordion => 
+      {
+        let element = accordion.nativeElement;
+        let panel = element.nextElementSibling;
+        panel.style.maxHeight = panel.scrollHeight + "px";
+      });
   }
 
   toggleChallengeCompletion(challenge: Challenge): void {
@@ -75,23 +96,35 @@ export class ChallengesComponent implements OnInit {
     // 4- Keep only seconds not extracted to minutes:
     seconds = seconds % 60;
 
-    if (seconds >= 30) {
-        minutes = minutes + 1;
-    }
-
     if (hours == 0) { return minutes + " min"; }
     if (days == 0) { return hours + " hrs, " + minutes + " min"; }
     if (days == 1) { return days + " day, " + hours + " hrs"; }
     return days + " days, " + hours + " hrs";
-}
+  }
 
   ngOnInit(): void {
     this.getCurrentChallenges();
-
+    
     setInterval(() => {
-      this.dailyExpiryTime = this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-      this.weeklyExpiryTime = this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-      this.seasonExpiryTime = this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
-    }, 31000);
+      this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+      this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+      this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+    }, 2000);
+  }
+
+  ngAfterViewInit(): void {
+    
+    this.accordions.forEach(accordion => 
+      {
+        let element = accordion.nativeElement;
+        let panel = element.nextElementSibling;
+
+        element.addEventListener("click", 
+          function() 
+          { 
+            element.classList.toggle("active");
+            panel.classList.toggle("closed");
+          });
+      });
   }
 }

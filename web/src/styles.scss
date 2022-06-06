@@ -1,27 +1,45 @@
 /* You can add global styles to this file, and also import other style files */
 /* Application-wide Styles */
+
+@import './vars.scss';
+
 @font-face {
     font-family: RevolutionGothicBold;
     src: url(assets/fonts/RevolutionGothic_Bold.otf) format("opentype");
   }
 
+@font-face {
+  font-family: Volte-Regular;
+  src: url(assets/fonts/Volte-Regular.woff) format("woff");
+}
+
+@font-face {
+  font-family: Volte-Bold;
+  src: url(assets/fonts/Volte-Bold.woff) format("woff");
+}
+
+@font-face {
+  font-family: Volte-Semibold;
+  src: url(assets/fonts/Volte-Semibold.woff) format("woff");
+}
+
+@font-face {
+  font-family: DexaProBlack;
+  src: url(assets/fonts/dexapro-expanded-black.otf) format("opentype");
+}
+
 h1 {
     color: #369;
-    //font-family: Arial, Helvetica, sans-serif;
     font-size: 250%;
   }
   h2, h3 {
     color: #EEE;
-    //font-family: Arial, Helvetica, sans-serif;
     font-weight: lighter;
   }
   body {
     margin: 0;
-    background-image: url("assets/img/background.jpg");
-    background-attachment: fixed;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
+    background: rgb(0,85,110);
+    background: radial-gradient(circle, rgba(0,85,110,1) 25%, rgba(11,46,50,1) 82%); 
   }
   body, input[type="text"], button {
     color: #333;
@@ -61,14 +79,20 @@ h1 {
   
   /* everywhere else */
   * {
-    font-family: 'RevolutionGothicBold', Arial, Helvetica, sans-serif;
+    font-family: 'Volte-Regular', Arial, Helvetica, sans-serif;
   }
 
 .challengesContainer {
     max-width: 20em;
-    margin: auto;
-    padding: 1px 20px;
+    margin: 20px auto;
+    padding: 5px 10px;
     text-align: center;
-    background-color: rgba(2, 2, 2, 0.7);
+    background-color: rgba(2, 2, 2, 0.8);
     //border: 1px solid red;
+}
+
+@media (max-width: $breakpoint-mobile) {
+  .challengesContainer {
+    margin-top: 0;
+  }
 }
