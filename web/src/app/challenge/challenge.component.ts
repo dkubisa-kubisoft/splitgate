@@ -109,7 +109,7 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
       this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
       this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
       this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
-    }, 2000);
+    }, 10000);
   }
 
   ngAfterViewInit(): void {
