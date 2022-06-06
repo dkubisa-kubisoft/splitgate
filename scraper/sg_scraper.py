@@ -167,15 +167,19 @@ def ImageToText(fileName):
     # Find & use best threshold based on confidence level
     best_min_prob = 0.0
     best_text = ""
-    for thresh in range(100, 201, 10):
+    char_whitelist = '"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ,0123456789"'
+    for thresh in range(120, 181, 10):
         # Text is white, so invert to black text on white background for thresholding
         img_thresh = cv2.threshold(img, thresh, 255, cv2.THRESH_BINARY_INV)[1]
-        d = pytesseract.image_to_data(img_thresh, output_type=pytesseract.Output.DICT)
+        d = pytesseract.image_to_data(img_thresh, output_type=pytesseract.Output.DICT,
+                config=f'-c tessedit_char_whitelist={char_whitelist} --psm 6')
         try:
             df = [float(i) for i in d['conf']]
             probs = [prob for prob in df if prob >= 0]
             min_prob = min(probs)
-            if min_prob > best_min_prob:
+            # >1 => If threshold is too high or too low, the system will be very confident with a
+            # one word solution, which is never valid
+            if min_prob > best_min_prob and len(probs) > 1:
                 text = pytesseract.image_to_string(img_thresh)
                 text = text.replace("\n", " ").rstrip()
                 if text != "":
@@ -185,7 +189,7 @@ def ImageToText(fileName):
         except:
             pass
 
-    #print(best_text)
+    print(best_text)
     return best_text
 
 
@@ -216,12 +220,26 @@ def ApiChallenge(type, idx, desc, start_dt, end_dt):
     return {"challengeType": type, "index": idx, "description": desc, "startDateUtc": DatetimeToString(start_dt), "endDateUtc": DatetimeToString(end_dt) }
 
 
-def PostToApi():
+def PostToApi(json_obj):
+    # POST JSON data to API
+    print("POSTing to API...")
+    json_str = json.dumps(json_obj)
+
+    api_key = os.environ.get('POST_CHALLENGES_API_KEY')
+    url = 'https://splitgate-challenge-api.azurewebsites.net/api/PostChallenges?code=' + api_key
+    response = requests.post(url, data=json_str, verify=False)
+    if response.status_code == 200:
+        print('POST successful (200 Response)')
+    else:
+        print(f"Error POSTing JSON data: '{response}'")
+
+
+def CalculateChallengeData():
     """ There is an assumption that this function is run AFTER the Splitgate challenges have updated for the day
     i.e. currently after 4 AM EST
     """
 
-    print("POSTing to API...")
+    print("Calculating challenge data...")
     now = datetime.datetime.now(datetime.timezone.utc)
     
     daily_start_time = datetime.datetime(now.year, now.month, now.day, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
@@ -259,17 +277,9 @@ def PostToApi():
 
     json_obj = {}
     json_obj["challenges"] = challenges
-    json_str = json.dumps(json_obj)
-    #print(json_str)
 
-    # POST JSON data to API
-    api_key = os.environ.get('POST_CHALLENGES_API_KEY')
-    url = 'https://splitgate-challenge-api.azurewebsites.net/api/PostChallenges?code=' + api_key
-    response = requests.post(url, data=json_str, verify=False)
-    if response.status_code == 200:
-        print('POST successful (200 Response)')
-    else:
-        print(f"Error POSTing JSON data: '{response}'")
+    print("done")
+    return json_obj    
     
 
 def main():
@@ -284,7 +294,8 @@ def main():
     SaveDailies()
     SaveWeeklies()
     CloseSplitgate()
-    PostToApi()
+    challenges = CalculateChallengeData()
+    PostToApi(challenges)
 
 
 # Run main
