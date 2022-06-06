@@ -8,15 +8,13 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import subprocess
 import time
-from PIL import Image
-from PIL import ImageDraw
 import cv2
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
 
 # All screen locations & sizes based on 1440p resolution
-daily_width = 380
-daily_height = 50
+daily_width = 390
+daily_height = 60
 weekly_width = 365
 weekly_height = 80
 
@@ -80,11 +78,11 @@ def GetToMainMenu():
 
 def SaveDailies():
     print("Saving dailies...")
-    daily_x = 1998
+    daily_x = 1990
 
-    pag.screenshot("ss/daily1.png", region = (daily_x, 219, daily_width, daily_height))
-    pag.screenshot("ss/daily2.png", region = (daily_x, 331, daily_width, daily_height))
-    pag.screenshot("ss/daily3.png", region = (daily_x, 443, daily_width, daily_height))
+    pag.screenshot("ss/daily1.png", region = (daily_x, 210, daily_width, daily_height))
+    pag.screenshot("ss/daily2.png", region = (daily_x, 335, daily_width, daily_height))
+    pag.screenshot("ss/daily3.png", region = (daily_x, 435, daily_width, daily_height))
     
     print("done")
 
@@ -123,30 +121,6 @@ def SaveWeeklies():
         print("done")
     else:
         print("Weeklies already up-to-date.")
-
-
-def SaveCombinedImage(dailies, weeklies):
-    """Construct one combined image consisting of daily and weekly challenges
-
-    This was from the initial prototype. Now that text is being OCR-ed and sent to an API, this
-    combined image is no longer used.
-    """
-    im = Image.new('RGB', (weekly_width + 4, (daily_height*3) + (weekly_height*6) + 16 + 2*11))
-    im.paste(dailies[0],  (2, 2))
-    im.paste(dailies[1],  (2, daily_height + 2*2))
-    im.paste(dailies[2],  (2, daily_height*2 + 2*3))
-    im.paste(weeklies[0], (2, daily_height*3 + 2*4))
-    im.paste(weeklies[1], (2, daily_height*3 + weekly_height + 2*5))
-    im.paste(weeklies[2], (2, daily_height*3 + weekly_height*2 + 2*6))
-    im.paste(weeklies[3], (2, daily_height*3 + weekly_height*3 + 2*7))
-    im.paste(weeklies[4], (2, daily_height*3 + weekly_height*4 + 2*8))
-    im.paste(weeklies[5], (2, daily_height*3 + weekly_height*5 + 2*9))
-    
-    last_updated = "Last Updated " + datetime.datetime.now().strftime("%a %b %d, %Y at %H:%M EST")
-    draw = ImageDraw.Draw(im)
-    draw.text((10, daily_height*3 + weekly_height*6 + 2*10), last_updated, (255, 255, 255))
-    
-    im.save("ss/all.png")
 
 
 def DailyCheckIn():
@@ -189,12 +163,34 @@ def ImageToText(fileName):
 
     # Convert to grayscale. Must be done before thresholding.
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # Find & use best threshold based on confidence level
+    best_min_prob = 0.0
+    best_text = ""
+    char_whitelist = '"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ,0123456789"'
+    for thresh in range(120, 181, 10):
+        # Text is white, so invert to black text on white background for thresholding
+        img_thresh = cv2.threshold(img, thresh, 255, cv2.THRESH_BINARY_INV)[1]
+        d = pytesseract.image_to_data(img_thresh, output_type=pytesseract.Output.DICT,
+                config=f'-c tessedit_char_whitelist={char_whitelist} --psm 6')
+        try:
+            df = [float(i) for i in d['conf']]
+            probs = [prob for prob in df if prob >= 0]
+            min_prob = min(probs)
+            # >1 => If threshold is too high or too low, the system will be very confident with a
+            # one word solution, which is never valid
+            if min_prob > best_min_prob and len(probs) > 1:
+                text = pytesseract.image_to_string(img_thresh)
+                text = text.replace("\n", " ").rstrip()
+                if text != "":
+                    best_text = text
+                    best_min_prob = min_prob
+                    #print(f'{thresh} : {min_prob}  "{text}"  {probs}')
+        except:
+            pass
 
-    # Text is white, so invert to black text on white background for thresholding
-    img = cv2.threshold(img, 150, 255, cv2.THRESH_BINARY_INV)[1]
-
-    text = pytesseract.image_to_string(img).replace("\n", " ").rstrip()
-    return text
+    print(best_text)
+    return best_text
 
 
 def BetaSeason2Challenges():
@@ -212,60 +208,6 @@ def BetaSeason2Challenges():
     'Get 300 kills with the AR']
 
 
-def BetaSeason1Challenges():
-    """ Input Season Challenges by hand rather than via OCR for now since they change infrequently
-    """
-
-    return ['Score Highest on your team in 100 Matches',
-    'Play 300 Matches',
-    'Play 50 Matches of Featured Game Modes',
-    'Get 2,500 Kills',
-    'Win 25 Matches in a Party',
-    'Land 7500 Shots',
-    'Win 10 Matches in 5 Different Playlists',
-    'Play 100 Ranked Matches',
-    'Inflict 150,000 Damage',
-    'Go Through 50 Friendly Portals',
-    'Get 35 King Slayer Kills',
-    'Get 25 First Blood Kills',
-    'Get 1,000 Kills',
-    'Win 30 Matches with the Most Kills',
-    'Play 10 Matches in 1 Day',
-    'Get 150 Headshot Kills',
-    'Win 25 Matches with the Highest Score',
-    'Have the Most Assist Kills in 5 Matches',
-    'Get a Portal Kill',
-    'Get 1500 Score in Team Objective',
-    'Get 75 Double Kills',
-    'Get 100 Kills Through Portals',
-    'Get A Collateral Kill',
-    'Get 100 Melee Kills',
-    'Get 150 Assist Kills',
-    'Get 500 Score in Sniper Frenzy',
-    'Get the Most Kills on your team in 15 Matches',
-    'Get 50 Revenge Kills',
-    'Inflict 50,000 Damage',
-    'Win a Match in 6 Different Playlists',
-    'Win 25 Ranked Matches',
-    'Emote in 25 Matches',
-    'Win 75 Matches',
-    'Win 3 matches of FFA Brawl',
-    'Win a Match on 10 Different Maps',
-    'Win a Match with 10 Assist Kills',
-    'Play 25 Quick Play Matches',
-    'Win 5 Matches with Double the Score of the Opposing Team',
-    'Get a Triple Kill',
-    'Get 50 Kills with the BFB or Railgun',
-    'Play 50 Matches',
-    'Win a Match with the Highest Score and Most Kills',
-    'Get 75 Kills with a Sniper or Shotgun',
-    'Get the Highest Score on your team in 20 Matches',
-    'Get 100 Kills with SMG or Battle Rifle',
-    'Win a Match of 10 Different Game Modes',
-    'Get 300 Kills',
-    'Get 100 Assist Kills or Revenge Kills']
-
-
 def DatetimeToString(dt):
     """ Date/time format specified by the PostChallenges API
     """
@@ -278,12 +220,26 @@ def ApiChallenge(type, idx, desc, start_dt, end_dt):
     return {"challengeType": type, "index": idx, "description": desc, "startDateUtc": DatetimeToString(start_dt), "endDateUtc": DatetimeToString(end_dt) }
 
 
-def PostToApi():
+def PostToApi(json_obj):
+    # POST JSON data to API
+    print("POSTing to API...")
+    json_str = json.dumps(json_obj)
+
+    api_key = os.environ.get('POST_CHALLENGES_API_KEY')
+    url = 'https://splitgate-challenge-api.azurewebsites.net/api/PostChallenges?code=' + api_key
+    response = requests.post(url, data=json_str, verify=False)
+    if response.status_code == 200:
+        print('POST successful (200 Response)')
+    else:
+        print(f"Error POSTing JSON data: '{response}'")
+
+
+def CalculateChallengeData():
     """ There is an assumption that this function is run AFTER the Splitgate challenges have updated for the day
     i.e. currently after 4 AM EST
     """
 
-    print("POSTing to API...")
+    print("Calculating challenge data...")
     now = datetime.datetime.now(datetime.timezone.utc)
     
     daily_start_time = datetime.datetime(now.year, now.month, now.day, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
@@ -321,17 +277,9 @@ def PostToApi():
 
     json_obj = {}
     json_obj["challenges"] = challenges
-    json_str = json.dumps(json_obj)
-    #print(json_str)
 
-    # POST JSON data to API
-    api_key = os.environ.get('POST_CHALLENGES_API_KEY')
-    url = 'https://splitgate-challenge-api.azurewebsites.net/api/PostChallenges?code=' + api_key
-    response = requests.post(url, data=json_str, verify=False)
-    if response.status_code == 200:
-        print('POST successful (200 Response)')
-    else:
-        print(f"Error POSTing JSON data: '{response}'")
+    print("done")
+    return json_obj    
     
 
 def main():
@@ -346,7 +294,8 @@ def main():
     SaveDailies()
     SaveWeeklies()
     CloseSplitgate()
-    PostToApi()
+    challenges = CalculateChallengeData()
+    PostToApi(challenges)
 
 
 # Run main
