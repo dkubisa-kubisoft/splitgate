@@ -100,7 +100,7 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     if (days == 0) { return hours + " hrs, " + minutes + " min"; }
     if (days == 1) { return days + " day, " + hours + " hrs"; }
     return days + " days, " + hours + " hrs";
-}
+  }
 
   ngOnInit(): void {
     this.getCurrentChallenges();

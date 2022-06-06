@@ -3,19 +3,53 @@ namespace Splitgate.Api.Entities
     using System;
     using Splitgate.Api.Models;
 
+    /// <summary>
+    /// Represents an entity in the ChallengeArchive table.
+    /// </summary>
     public class ChallengeArchiveEntity : TableEntity
     {
+        /// <summary>
+        /// The format string for the partition key.
+        /// </summary>
         private const string PartitionKeyDateFormatString = "yyyy-MM-dd";
+
+        /// <summary>
+        /// Gets or sets the challenge type.
+        /// </summary>
         public string ChallengeType { get; set; }
-        public string Index { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        public int Index { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// Gets or sets the start date.
+        /// </summary>
         public string StartDateUtc { get;set; }
+
+        /// <summary>
+        /// Gets or sets the end date.
+        /// </summary>
         public string EndDateUtc { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChallengeArchiveEntity" /> class.
+        /// </summary>
         public ChallengeArchiveEntity() 
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ChallengeArchiveEntity" /> class and initializes its
+        /// values to reflect the specified <see cref="Challenge" />.
+        /// <param name="modelObject">The <see cref="Challenge" />.</param>
+        /// </summary>
         public ChallengeArchiveEntity(Challenge modelObject)
         {
             // Validate input
@@ -26,9 +60,9 @@ namespace Splitgate.Api.Entities
                 throw new ArgumentException($"Invalid challenge type: [{modelObject.ChallengeType}].");
             }
 
-            if (string.IsNullOrWhiteSpace(modelObject.Index))
+            if (modelObject.Index <= 0)
             {
-                throw new ArgumentException("Missing challenge index.");
+                throw new ArgumentException("Invalid index.");
             }
 
             if (string.IsNullOrWhiteSpace(modelObject.Description))
@@ -42,10 +76,14 @@ namespace Splitgate.Api.Entities
             this.Index = modelObject.Index;
             this.Description = modelObject.Description;
             
-            this.PartitionKey = DateTime.UtcNow.AddHours(-8).ToString(ChallengeEntity.PartitionKeyDateFormatString);
-            this.RowKey = $"{modelObject.ChallengeType},{modelObject.Index}";
+            this.PartitionKey = DateTime.UtcNow.ToString(PartitionKeyDateFormatString);
+            this.RowKey = Guid.NewGuid().ToString();
         }
 
+        /// <summary>
+        /// Creates and returns a <see cref="Challenge" /> object that reflects this entity.
+        /// </summary>
+        /// <returns>The <see cref="Challenge" />.</returns>
         public Challenge GetModelObject() 
         {
             return new Challenge
