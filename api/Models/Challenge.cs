@@ -49,5 +49,12 @@ namespace Splitgate.Api.Models
         /// </summary>
         [JsonProperty("timestamp")]
         public DateTimeOffset Timestamp { get; set; }
+
+        /// <summary>
+        /// Gets or sets the challenge stage.
+        /// </summary>
+        /// <value>The stage.</value>
+        [JsonProperty("stage")]
+        public int? Stage { get; set; }
     }
 }

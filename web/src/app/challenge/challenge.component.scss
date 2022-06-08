@@ -13,6 +13,11 @@ $challenge-container-background-color: #010f16;
     }
 }
 
+.stage {
+    @extend .challenge-title;
+    font-size: x-small;
+}
+
 .challenge {
     border: 2px solid #0dd7eb;
     text-align: center;

@@ -26,6 +26,8 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
   allSeasonalsCompleted: boolean = false;
   seasonalRefreshMessage: string = "";
 
+  seasonalStages: Map<number, Challenge[]> = new Map();
+
   constructor(private challengeService: ChallengeService) 
   { 
     this.accordions = new QueryList<ElementRef>();
@@ -35,18 +37,37 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     this.challengeService.getCurrentChallenges()
       .subscribe(response => 
         {
-          this.dailyChallenges = response.dailyChallenges;
+          this.dailyChallenges = response.dailyChallenges.sort((a, b) => this.compareChallenges(a, b));
           this.dailyRefreshMessage = this.getRefreshedMessage(new Date(response.dailyChallengeRefreshTimestamp));
 
-          this.weeklyChallenges = response.weeklyChallenges;
+          this.weeklyChallenges = response.weeklyChallenges.sort((a, b) => this.compareChallenges(a, b));
           this.weeklyRefreshMessage = this.getRefreshedMessage(new Date(response.weeklyChallengeRefreshTimestamp));
 
-          this.seasonalChallenges = response.seasonalChallenges;
+          this.seasonalChallenges = response.seasonalChallenges.sort((a, b) => this.compareChallenges(a, b));
           this.seasonalRefreshMessage = this.getRefreshedMessage(new Date(response.seasonalChallengeRefreshTimestamp));
 
           if(this.dailyChallenges.every(c => c.completed === true)) { this.allDailysCompleted = true; }
           if(this.weeklyChallenges.every(c => c.completed === true)) { this.allWeeklysCompleted = true; }
           if(this.seasonalChallenges.every(c => c.completed === true)) { this.allSeasonalsCompleted = true; }
+
+          // response.seasonalChallenges.forEach(challenge => 
+          // {
+          //   if (challenge.stage != null) 
+          //   {
+          //     var stageChallenges = this.seasonalStages.get(challenge.stage);
+
+          //     if (stageChallenges == null) 
+          //     {
+          //       stageChallenges = [challenge];
+          //       this.seasonalStages.set(challenge.stage, stageChallenges);
+          //     }
+          //     else 
+          //     {
+                
+          //       stageChallenges.push(challenge);
+          //     }
+          //   }
+          // });
 
           this.dailyExpiryMsg = this.dailyChallenges != null && this.dailyChallenges.length > 0 ? "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc) : "No challenges found";
           this.weeklyExpiryMsg = this.weeklyChallenges != null && this.weeklyChallenges.length > 0 ? "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc) : "No challenges found";
@@ -126,9 +147,22 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     return "Refreshed on " + refreshDate.getMonth() + "/" + refreshDate.getDay() + "/" + refreshDate.getFullYear() + " " + hours + ":" + this.zeroPad(refreshDate.getMinutes(), 2) + " " + amPm;
   }
 
+  compareChallenges(a: Challenge, b: Challenge): number 
+  {
+    if (a.index == b.index) {
+      return 0;
+    }
+    else if (a.index < b.index) {
+      return -1;
+    }
+    else {
+      return 1;
+    }
+  }
+
   ngOnInit(): void {
     this.getCurrentChallenges();
-    
+
     setInterval(() => 
     {
       this.dailyExpiryMsg = this.getExpiryMessage(this.dailyChallenges);
@@ -138,7 +172,6 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    
     this.accordions.forEach(accordion => 
       {
         let element = accordion.nativeElement;

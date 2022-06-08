@@ -40,6 +40,12 @@ namespace Splitgate.Api.Entities
         public string EndDateUtc { get; set; }
 
         /// <summary>
+        /// Gets or sets the challenge stage.
+        /// </summary>
+        /// <value>The challenge stage.</value>
+        public int? Stage { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="ChallengeEntity" class.
         /// </summary>
         public ChallengeEntity() 
@@ -78,6 +84,7 @@ namespace Splitgate.Api.Entities
             this.ChallengeType = modelObject.ChallengeType;
             this.Index = modelObject.Index;
             this.Description = modelObject.Description;
+            this.Stage = modelObject.Stage;
         }
 
         /// <summary>
@@ -95,17 +102,9 @@ namespace Splitgate.Api.Entities
                 StartDateUtc = DateTime.Parse(this.StartDateUtc),
                 EndDateUtc = DateTime.Parse(this.EndDateUtc),
                 Completed = completed,
-                Timestamp = this.Timestamp.HasValue ? this.Timestamp.Value : DateTimeOffset.MinValue
+                Timestamp = this.Timestamp.HasValue ? this.Timestamp.Value : DateTimeOffset.MinValue,
+                Stage = this.Stage
             };
-        }
-
-        /// <summary>
-        /// Creates and returns a <see cref="ChallengeArchiveEntity" /> that reflects the values from this object.
-        /// </summary>
-        /// <returns>The <see cref="ChallengeArchiveEntity" />.</returns>
-        public ChallengeArchiveEntity GetArchiveEntity() 
-        {
-            return new ChallengeArchiveEntity(this.GetModelObject(false));
         }
 
         /// <summary>
@@ -119,6 +118,7 @@ namespace Splitgate.Api.Entities
             this.EndDateUtc = modelObject.EndDateUtc.ToString(ChallengeEntity.DateTimeFormat);
             this.Index = modelObject.Index;
             this.StartDateUtc = modelObject.StartDateUtc.ToString(ChallengeEntity.DateTimeFormat);
+            this.Stage = modelObject.Stage;
         }
     }
 }

@@ -34,6 +34,23 @@
     <div class="refreshTimestamp">{{ seasonalRefreshMessage }}</div>
 </div>
 
+<!-- <div *ngFor="let stageNumber of seasonalStages.keys()">
+    <div class="accordion noselect active" #accordion>
+        <div class="challenge-title">
+            SEASON CHALLENGES<br/>
+            <span class="stage">STAGE {{stageNumber}}</span>
+        </div>
+        <br />
+        <span class="reset">{{seasonalExpiryMsg}}</span>
+    </div>
+    <div class="panel">
+        <div class="challenge noselect" *ngFor="let challenge of seasonalStages.get(stageNumber)" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+            {{ challenge.description }}
+        </div>
+        <div class="refreshTimestamp">{{ seasonalRefreshMessage }}</div>
+    </div>
+</div> -->
+
 
 
 

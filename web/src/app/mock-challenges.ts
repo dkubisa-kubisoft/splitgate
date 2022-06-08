@@ -7,7 +7,8 @@ export const CHALLENGES: Challenge[] = [
         index: 1,
         startDateUtc: '2022-05-21 8:00 AM',
         endDateUtc: '2022-05-22 7:59 AM',
-        completed: false
+        completed: false,
+        timestamp: new Date()
     },
     {
         challengeType: 'daily',
@@ -15,7 +16,8 @@ export const CHALLENGES: Challenge[] = [
         index: 2,
         startDateUtc: '2022-05-21 8:00 AM',
         endDateUtc: '2022-05-22 7:59 AM',
-        completed: false
+        completed: false,
+        timestamp: new Date()
     },
     {
         challengeType: 'daily',
@@ -23,6 +25,7 @@ export const CHALLENGES: Challenge[] = [
         index: 3,
         startDateUtc: '2022-05-21 8:00 AM',
         endDateUtc: '2022-05-22 7:59 AM',
-        completed: false
+        completed: false,
+        timestamp: new Date()
     }
 ]

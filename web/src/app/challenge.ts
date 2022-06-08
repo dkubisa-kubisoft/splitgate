@@ -5,4 +5,6 @@ export interface Challenge {
     startDateUtc: string;
     endDateUtc: string;
     completed: boolean;
+    timestamp: Date;
+    stage?: number;
 }
