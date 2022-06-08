@@ -97,6 +97,12 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     return days + " days, " + hours + " hrs";
   }
 
+  zeroPad(num : number, size: number) : string {
+    let str = num.toString();
+    while (str.length < size) str = "0" + str;
+    return str;
+  }
+
   getExpiryMessage(challenges: Challenge[]) : string 
   {
     return challenges != null && challenges.length > 0 ? "Resets in " + this.getExpiryTime(challenges[0].endDateUtc) : "No challenges found";
@@ -117,7 +123,7 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
       hours -= 12;
     }
 
-    return "Refreshed on " + refreshDate.getMonth() + "/" + refreshDate.getDay() + "/" + refreshDate.getFullYear() + " " + hours + ":" + refreshDate.getMinutes() + " " + amPm;
+    return "Refreshed on " + refreshDate.getMonth() + "/" + refreshDate.getDay() + "/" + refreshDate.getFullYear() + " " + hours + ":" + this.zeroPad(refreshDate.getMinutes(), 2) + " " + amPm;
   }
 
   ngOnInit(): void {
