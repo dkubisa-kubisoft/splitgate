@@ -14,14 +14,17 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
   dailyExpiryMsg: string = "Resets in ? hrs, ? min";
   dailyChallenges: Challenge[] = [];
   allDailysCompleted: boolean = false;
+  dailyRefreshMessage: string = "";
 
   weeklyExpiryMsg: string = "Resets in ? hrs, ? min";
   weeklyChallenges: Challenge[] = [];
   allWeeklysCompleted: boolean = false;
+  weeklyRefreshMessage: string = "";
 
-  seasonExpiryMsg: string = "Resets in ? hrs, ? min";
-  seasonChallenges: Challenge[] = [];
+  seasonalExpiryMsg: string = "Resets in ? hrs, ? min";
+  seasonalChallenges: Challenge[] = [];
   allSeasonalsCompleted: boolean = false;
+  seasonalRefreshMessage: string = "";
 
   constructor(private challengeService: ChallengeService) 
   { 
@@ -32,49 +35,22 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     this.challengeService.getCurrentChallenges()
       .subscribe(response => 
         {
-          for (let i = 0; i < response.challenges.length; i++) {
-            let c = response.challenges[i];
+          this.dailyChallenges = response.dailyChallenges;
+          this.dailyRefreshMessage = this.getRefreshedMessage(new Date(response.dailyChallengeRefreshTimestamp));
 
-            switch (c.challengeType) {
-              case 'daily':
-                this.dailyChallenges.push(c);
-                break;
-              case 'weekly':
-                this.weeklyChallenges.push(c);
-                break;
-              case 'seasonal':
-                this.seasonChallenges.push(c);
-                break;
-            }
-          }
+          this.weeklyChallenges = response.weeklyChallenges;
+          this.weeklyRefreshMessage = this.getRefreshedMessage(new Date(response.weeklyChallengeRefreshTimestamp));
+
+          this.seasonalChallenges = response.seasonalChallenges;
+          this.seasonalRefreshMessage = this.getRefreshedMessage(new Date(response.seasonalChallengeRefreshTimestamp));
 
           if(this.dailyChallenges.every(c => c.completed === true)) { this.allDailysCompleted = true; }
           if(this.weeklyChallenges.every(c => c.completed === true)) { this.allWeeklysCompleted = true; }
-          if(this.seasonChallenges.every(c => c.completed === true)) { this.allSeasonalsCompleted = true; }
+          if(this.seasonalChallenges.every(c => c.completed === true)) { this.allSeasonalsCompleted = true; }
 
-          if (this.dailyChallenges.length > 0)
-          {
-            this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-          }
-          else {
-            this.dailyExpiryMsg = "No challenges found"
-          }
-
-          if (this.weeklyChallenges.length > 0)
-          {
-            this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-          }
-          else {
-            this.weeklyExpiryMsg = "No challenges found"
-          }
-
-          if (this.seasonChallenges.length > 0)
-          {
-            this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
-          }
-          else {
-            this.seasonExpiryMsg = "No challenges found"
-          }
+          this.dailyExpiryMsg = this.dailyChallenges != null && this.dailyChallenges.length > 0 ? "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc) : "No challenges found";
+          this.weeklyExpiryMsg = this.weeklyChallenges != null && this.weeklyChallenges.length > 0 ? "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc) : "No challenges found";
+          this.seasonalExpiryMsg = this.seasonalChallenges != null && this.seasonalChallenges.length > 0 ? "Resets in " + this.getExpiryTime(this.seasonalChallenges[0].endDateUtc) : "No challenges found";
         });
   }
 
@@ -94,7 +70,6 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
   getExpiryTime(challengeEndDate: string) {
       let now = new Date().getTime();
       let end = new Date(challengeEndDate).getTime();
-
       let millisecondsLeft = end - now;
 
       return this.msToHrsMin(millisecondsLeft);
@@ -122,33 +97,43 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     return days + " days, " + hours + " hrs";
   }
 
+  zeroPad(num : number, size: number) : string {
+    let str = num.toString();
+    while (str.length < size) str = "0" + str;
+    return str;
+  }
+
+  getExpiryMessage(challenges: Challenge[]) : string 
+  {
+    return challenges != null && challenges.length > 0 ? "Resets in " + this.getExpiryTime(challenges[0].endDateUtc) : "No challenges found";
+  }
+
+  getRefreshedMessage(refreshDate: Date) : string 
+  {
+    let amPm = "AM"
+    let hours = refreshDate.getHours();
+
+    if (hours >= 12) 
+    {
+      amPm = "PM";
+    }
+
+    if (hours > 12) 
+    {
+      hours -= 12;
+    }
+
+    return "Refreshed on " + refreshDate.getMonth() + "/" + refreshDate.getDay() + "/" + refreshDate.getFullYear() + " " + hours + ":" + this.zeroPad(refreshDate.getMinutes(), 2) + " " + amPm;
+  }
+
   ngOnInit(): void {
     this.getCurrentChallenges();
     
-    setInterval(() => {
-      if (this.dailyChallenges.length > 0)
-      {
-        this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-      }
-      else {
-        this.dailyExpiryMsg = "No challenges found"
-      }
-
-      if (this.weeklyChallenges.length > 0)
-      {
-        this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-      }
-      else {
-        this.weeklyExpiryMsg = "No challenges found"
-      }
-
-      if (this.seasonChallenges.length > 0)
-      {
-        this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
-      }
-      else {
-        this.seasonExpiryMsg = "No challenges found"
-      }
+    setInterval(() => 
+    {
+      this.dailyExpiryMsg = this.getExpiryMessage(this.dailyChallenges);
+      this.weeklyExpiryMsg = this.getExpiryMessage(this.weeklyChallenges);
+      this.seasonalExpiryMsg = this.getExpiryMessage(this.seasonalChallenges);
     }, 10000);
   }
 

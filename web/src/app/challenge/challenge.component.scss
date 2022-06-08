@@ -70,7 +70,7 @@ $challenge-container-background-color: #010f16;
 }
 
 .panel {
-    padding: 0 10px 10px 10px;
+    padding: 0 10px;
     overflow: hidden;
     border: 3px solid $challenge-container-background-color;
     background-color: $challenge-container-background-color;
@@ -82,6 +82,13 @@ $challenge-container-background-color: #010f16;
     padding-top: 0;
     padding-bottom: 0;
     transition: max-height 0.2s ease-out;
+}
+
+.refreshTimestamp {
+    font-size: smaller;
+    font-style: italic;
+    color:rgb(97, 97, 97);
+    margin-top: 10px;
 }
 
 @media (max-width: $breakpoint-mobile) {
