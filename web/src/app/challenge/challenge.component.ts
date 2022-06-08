@@ -52,9 +52,29 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
           if(this.weeklyChallenges.every(c => c.completed === true)) { this.allWeeklysCompleted = true; }
           if(this.seasonChallenges.every(c => c.completed === true)) { this.allSeasonalsCompleted = true; }
 
-          this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-          this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-          this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+          if (this.dailyChallenges.length > 0)
+          {
+            this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+          }
+          else {
+            this.dailyExpiryMsg = "No challenges found"
+          }
+
+          if (this.weeklyChallenges.length > 0)
+          {
+            this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+          }
+          else {
+            this.weeklyExpiryMsg = "No challenges found"
+          }
+
+          if (this.seasonChallenges.length > 0)
+          {
+            this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+          }
+          else {
+            this.seasonExpiryMsg = "No challenges found"
+          }
         });
   }
 
@@ -106,9 +126,29 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
     this.getCurrentChallenges();
     
     setInterval(() => {
-      this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
-      this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
-      this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+      if (this.dailyChallenges.length > 0)
+      {
+        this.dailyExpiryMsg = "Resets in " + this.getExpiryTime(this.dailyChallenges[0].endDateUtc);
+      }
+      else {
+        this.dailyExpiryMsg = "No challenges found"
+      }
+
+      if (this.weeklyChallenges.length > 0)
+      {
+        this.weeklyExpiryMsg = "Resets in " + this.getExpiryTime(this.weeklyChallenges[0].endDateUtc);
+      }
+      else {
+        this.weeklyExpiryMsg = "No challenges found"
+      }
+
+      if (this.seasonChallenges.length > 0)
+      {
+        this.seasonExpiryMsg = "Resets in " + this.getExpiryTime(this.seasonChallenges[0].endDateUtc);
+      }
+      else {
+        this.seasonExpiryMsg = "No challenges found"
+      }
     }, 10000);
   }
 
