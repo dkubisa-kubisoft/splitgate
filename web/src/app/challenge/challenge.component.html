@@ -7,6 +7,7 @@
     <div class="challenge noselect" *ngFor="let challenge of dailyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
         {{ challenge.description }}
     </div>
+    <div class="refreshTimestamp">{{ dailyRefreshMessage }}</div>
 </div>
 <hr />
 <div class="accordion noselect active" #accordion>
@@ -18,17 +19,19 @@
     <div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
         {{ challenge.description }}
     </div>
+    <div class="refreshTimestamp">{{ weeklyRefreshMessage }}</div>
 </div>
 <hr />
 <div class="accordion noselect active" #accordion>
     <span class="challenge-title">SEASON CHALLENGES</span>
     <br />
-    <span class="reset">{{seasonExpiryMsg}}</span>
+    <span class="reset">{{seasonalExpiryMsg}}</span>
 </div>
 <div class="panel">
-    <div class="challenge noselect" *ngFor="let challenge of seasonChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+    <div class="challenge noselect" *ngFor="let challenge of seasonalChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
         {{ challenge.description }}
     </div>
+    <div class="refreshTimestamp">{{ seasonalRefreshMessage }}</div>
 </div>
 
 

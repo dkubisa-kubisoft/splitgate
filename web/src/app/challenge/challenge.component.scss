@@ -84,6 +84,12 @@ $challenge-container-background-color: #010f16;
     transition: max-height 0.2s ease-out;
 }
 
+.refreshTimestamp {
+    font-size: smaller;
+    font-style: italic;
+    color:rgb(97, 97, 97);
+}
+
 @media (max-width: $breakpoint-mobile) {
     .challenge {
         font-weight: 600;

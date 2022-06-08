@@ -26,19 +26,37 @@ namespace Splitgate.Api.Functions
         public async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req, ILogger log)
         {
             log.LogInformation("GetCurrentChallenges called.");
+            
+            var response = new GetCurrentChallengesResponse();
 
             var challengesTable = this.tableServiceClient.GetTableClient(TableNames.Challenges);
             var completedChallengesTable = this.tableServiceClient.GetTableClient(TableNames.CompletedChallenges);
             var ip = req.HttpContext.Connection.RemoteIpAddress.ToString();
 
-            var challengeEntities = challengesTable.Query<ChallengeEntity>($"PartitionKey eq '1' and EndDateUtc gt '{DateTime.UtcNow.ToString(ChallengeEntity.DateTimeFormat)}'");
+            // Retrieve all the challenges
+            var dailys = challengesTable.Query<ChallengeEntity>("PartitionKey eq 'daily'");
+            var weeklys = challengesTable.Query<ChallengeEntity>("PartitionKey eq 'weekly'");
+            var seasonals = challengesTable.Query<ChallengeEntity>("PartitionKey eq 'seasonal'");
 
             // Get the completed challenges for the caller's ip
             var completedChallenges = completedChallengesTable.Query<Splitgate.Api.Entities.TableEntity>($"PartitionKey eq '{ip}'");
             
-            var response = new GetCurrentChallengesResponse();
+            // Add the unexpired daily, weekly and seasonal challenges to the response along with the caller's completion
+            // state for each challenge.
+            response.DailyChallenges.AddRange(
+                dailys.Where(challenge => DateTime.Parse(challenge.EndDateUtc) > DateTime.UtcNow)
+                .Select(challenge => challenge.GetModelObject(completedChallenges.Any(completed => completed.RowKey == $"{challenge.ChallengeType},{challenge.Index}"))));
+            response.DailyChallengeRefreshTimestamp = dailys.Select(challenge => challenge.Timestamp).Min() ?? DateTime.MinValue;
 
-            response.Challenges.AddRange(challengeEntities.Select(entity => entity.GetModelObject(completedChallenges.Any(completed => completed.RowKey == entity.RowKey))));
+            response.WeeklyChallenges.AddRange(
+                weeklys.Where(challenge => DateTime.Parse(challenge.EndDateUtc) > DateTime.UtcNow)
+                .Select(challenge => challenge.GetModelObject(completedChallenges.Any(completed => completed.RowKey == $"{challenge.ChallengeType},{challenge.Index}"))));
+            response.WeeklyChallengeRefreshTimestamp = weeklys.Select(challenge => challenge.Timestamp).Min() ?? DateTimeOffset.MinValue;
+
+            response.SeasonalChallenges.AddRange(
+                seasonals.Where(challenge => DateTime.Parse(challenge.EndDateUtc) > DateTime.UtcNow)
+                .Select(challenge => challenge.GetModelObject(completedChallenges.Any(completed => completed.RowKey == $"{challenge.ChallengeType},{challenge.Index}"))));
+            response.SeasonalChallengeRefreshTimestamp = seasonals.Select(challenge => challenge.Timestamp).Min() ?? DateTimeOffset.MinValue;
 
             return new OkObjectResult(response);
         }

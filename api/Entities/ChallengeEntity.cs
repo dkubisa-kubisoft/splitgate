@@ -71,14 +71,13 @@ namespace Splitgate.Api.Entities
                 throw new ArgumentException("Missing challenge description.");
             }
 
+            this.PartitionKey = modelObject.ChallengeType;
+            this.RowKey = modelObject.Index.ToString();
             this.StartDateUtc = modelObject.StartDateUtc.ToString(DateTimeFormat);
             this.EndDateUtc = modelObject.EndDateUtc.ToString(DateTimeFormat);
             this.ChallengeType = modelObject.ChallengeType;
             this.Index = modelObject.Index;
             this.Description = modelObject.Description;
-            
-            this.PartitionKey = "1";
-            this.RowKey = $"{modelObject.ChallengeType},{modelObject.Index}";
         }
 
         /// <summary>
@@ -95,7 +94,8 @@ namespace Splitgate.Api.Entities
                 Description = this.Description,
                 StartDateUtc = DateTime.Parse(this.StartDateUtc),
                 EndDateUtc = DateTime.Parse(this.EndDateUtc),
-                Completed = completed
+                Completed = completed,
+                Timestamp = this.Timestamp.HasValue ? this.Timestamp.Value : DateTimeOffset.MinValue
             };
         }
 

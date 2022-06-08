@@ -1,5 +1,10 @@
 import { Challenge } from "../challenge"
 
 export interface GetCurrentChallengesResponse {
-    challenges: Challenge[]
+    dailyChallenges: Challenge[];
+    dailyChallengeRefreshTimestamp: Date;
+    weeklyChallenges: Challenge[];
+    weeklyChallengeRefreshTimestamp: Date;
+    seasonalChallenges: Challenge[];
+    seasonalChallengeRefreshTimestamp: Date;
 }

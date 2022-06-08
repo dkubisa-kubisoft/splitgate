@@ -80,17 +80,17 @@ namespace Splitgate.Api.Functions
                 
                 foreach( var challengeModel in request.Challenges) 
                 {
-                    var newChallenge = new ChallengeEntity(challengeModel);
+                    var challengeToUpdate = new ChallengeEntity(challengeModel);
 
                     ChallengeEntity existingEntity = null;
 
                     try 
                     {
-                        existingEntity = (await challengesTableClient.GetEntityAsync<ChallengeEntity>("1", newChallenge.RowKey).ConfigureAwait(false))?.Value;
+                        existingEntity = (await challengesTableClient.GetEntityAsync<ChallengeEntity>(challengeToUpdate.PartitionKey, challengeToUpdate.RowKey).ConfigureAwait(false))?.Value;
                     }
                     catch (RequestFailedException) {}
 
-                    if (existingEntity != null) 
+                    if (existingEntity != null)
                     {
                         // The posted challenge replaces an existing challenge
                         if (request.SuppressCompletionPurge == false)
@@ -98,18 +98,16 @@ namespace Splitgate.Api.Functions
                             await this.PurgeCompletions(existingEntity.ChallengeType, existingEntity.Index).ConfigureAwait(false);
                         }
 
-                        // Archive the entity before updating
-                        await this.ArchiveChallenge(existingEntity).ConfigureAwait(false);
-
                         // Load the existing entity with new values from the request
                         existingEntity.Load(challengeModel);
 
+                        // Update the challenge
                         await challengesTableClient.UpdateEntityAsync<ChallengeEntity>(existingEntity, Azure.ETag.All, TableUpdateMode.Replace);
                     }
                     else 
                     {
                         // No existing challenge found, add the new challenge
-                        await challengesTableClient.AddEntityAsync<ChallengeEntity>(newChallenge).ConfigureAwait(false);
+                        await challengesTableClient.AddEntityAsync<ChallengeEntity>(challengeToUpdate).ConfigureAwait(false);
                     }
                 }
             
@@ -119,30 +117,6 @@ namespace Splitgate.Api.Functions
             {
                 log.LogError(ex, $"Unhandled exception in PostChallenges: {ex.Message}");
                 return new ObjectResult(new { Message = "Internal server error." }) { StatusCode = StatusCodes.Status500InternalServerError };
-            }
-        }
-
-        /// <summary>
-        /// Archives a challenge.
-        /// </summary>
-        /// <param name="challenge">The challenge to archive.</param>
-        private async Task ArchiveChallenge(ChallengeEntity challenge)
-        {
-            try 
-            {
-                if (challenge == null)
-                {
-                    throw new ArgumentNullException(nameof(challenge));
-                }
-
-                await this.tableServicesClient.CreateTableIfNotExistsAsync(TableNames.ChallengeArchive).ConfigureAwait(false);
-                var challengeArchiveTableClient = tableServicesClient.GetTableClient(TableNames.ChallengeArchive);
-
-                await challengeArchiveTableClient.AddEntityAsync<ChallengeArchiveEntity>(challenge.GetArchiveEntity()).ConfigureAwait(false);
-            }
-            catch (RequestFailedException)
-            {
-                // Record for today already exists in the archive, ignore
             }
         }
 

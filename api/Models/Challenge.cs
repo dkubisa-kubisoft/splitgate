@@ -43,5 +43,11 @@ namespace Splitgate.Api.Models
         /// </summary>
         [JsonProperty("completed")]
         public bool Completed { get; set; }
+
+        /// <summary>
+        /// Gets or sets the challenge start date.
+        /// </summary>
+        [JsonProperty("timestamp")]
+        public DateTimeOffset Timestamp { get; set; }
     }
 }
