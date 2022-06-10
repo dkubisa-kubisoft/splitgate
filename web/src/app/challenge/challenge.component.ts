@@ -123,7 +123,7 @@ export class ChallengesComponent implements OnInit, AfterViewInit {
       hours -= 12;
     }
 
-    return "Refreshed on " + (refreshDate.getMonth() + 1) + '/' + refreshDate.getDate() + '/' + refreshDate.getFullYear() + " " + hours + ":" + this.zeroPad(refreshDate.getMinutes(), 2) + " " + amPm;
+    return "Last updated " + (refreshDate.getMonth() + 1) + '/' + refreshDate.getDate() + '/' + refreshDate.getFullYear() + " " + hours + ":" + this.zeroPad(refreshDate.getMinutes(), 2) + " " + amPm;
   }
 
   ngOnInit(): void {
