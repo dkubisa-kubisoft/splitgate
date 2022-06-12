@@ -7,8 +7,14 @@ $challenge-container-background-color: #010f16;
     font-family: DexaProBlack, Volte-Semibold;
     font-size: larger;
     font-weight: lighter;
+}
 
-    .completed {
+.all-challenges-completed {
+    margin: 10px;
+    border: 1px solid goldenrod;
+    // background-color: gold !important;
+
+    * {
         color: gold;
     }
 }

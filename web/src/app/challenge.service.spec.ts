@@ -1,16 +1,15 @@
 import { TestBed } from '@angular/core/testing';
-
 import { ChallengeService } from './challenge.service';
+import { NumberUtils } from './util/NumberUtils';
 
-describe('ChallengeService', () => {
+describe('ChallengeService', () => 
+{
   let service: ChallengeService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(ChallengeService);
   });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
+  it('should be created', () => { expect(service).toBeTruthy(); });
 });
+
