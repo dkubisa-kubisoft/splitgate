@@ -30,7 +30,7 @@ $challenge-container-background-color: rgba(2, 2, 2, 0.8);
 }
 
 .challenge {
-    transition: 0.4s;
+    transition: background-color 0.4s;
     border: 2px solid #0dd7eb;
     text-align: center;
     padding: 10px;
