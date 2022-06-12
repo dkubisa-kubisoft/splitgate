@@ -1,4 +1,4 @@
-<div [classList]="(allDailysCompleted ? 'all-challenges-completed' : '') + ' accordion noselect active'" #accordion>
+<div [classList]="(allDailysCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
     <span class="challenge-title">DAILY CHALLENGES</span>
     <br />
     <span class="reset">{{dailyExpiryMsg}}</span>
@@ -10,7 +10,7 @@
     <div class="refreshTimestamp">{{ dailyLastUpdatedMessage }}</div>
 </div>
 <hr />
-<div [classList]="(allWeeklysCompleted ? 'all-challenges-completed' : '') + ' accordion noselect active'" #accordion>
+<div [classList]="(allWeeklysCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
     <span class="challenge-title">WEEKLY CHALLENGES</span>
     <br />
     <span class="reset">{{weeklyExpiryMsg}}</span>
@@ -22,7 +22,7 @@
     <div class="refreshTimestamp">{{ weeklyLastUpdatedMessage }}</div>
 </div>
 <hr />
-<div [classList]="(allSeasonalsCompleted ? 'all-challenges-completed' : '') + ' accordion noselect active'" #accordion>
+<div [classList]="(allSeasonalsCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
     <span class="challenge-title">SEASON CHALLENGES</span>
     <br />
     <span class="reset">{{seasonalExpiryMsg}}</span>

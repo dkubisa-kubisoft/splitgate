@@ -1,6 +1,11 @@
 @import './vars.scss';
 
-$challenge-container-background-color: #010f16;
+$challenge-container-background-color: rgba(2, 2, 2, 0.8);
+
+.challenge-title-container {
+    margin: 5px;
+    border: 2px solid rgba(0,0,0,0);
+}
 
 .challenge-title {
     color: #EEE;
@@ -10,13 +15,16 @@ $challenge-container-background-color: #010f16;
 }
 
 .all-challenges-completed {
-    margin: 10px;
-    border: 1px solid goldenrod;
-    // background-color: gold !important;
-
+    //border: 1px solid goldenrod;
+    border: 2px solid goldenrod;
+    background-color: gold !important;
     * {
-        color: gold;
+        color: black;
     }
+}
+
+.all-challenges-completed:after {
+    color: black !important;
 }
 
 .challenge {
@@ -58,7 +66,6 @@ $challenge-container-background-color: #010f16;
     cursor: pointer;
     transition: 0.4s;
     padding: 10px 10px 10px 10px;
-    background-color: $challenge-container-background-color;
 }
 
 .accordion:after {
@@ -78,8 +85,6 @@ $challenge-container-background-color: #010f16;
 .panel {
     padding: 0 10px;
     overflow: hidden;
-    border: 3px solid $challenge-container-background-color;
-    background-color: $challenge-container-background-color;
     transition: max-height 0.2s ease-out;
 }
 
