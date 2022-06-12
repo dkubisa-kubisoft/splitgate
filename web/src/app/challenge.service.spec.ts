@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { ChallengeService } from './challenge.service';
-import { NumberUtils } from './util/NumberUtils';
+import { NumberUtils } from './Utilities/NumberUtils';
 
 describe('ChallengeService', () => 
 {
