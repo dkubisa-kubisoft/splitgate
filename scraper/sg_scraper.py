@@ -80,9 +80,9 @@ def SaveDailies():
     print("Saving dailies...")
     daily_x = 1990
 
-    pag.screenshot("ss/daily1.png", region = (daily_x, 210, daily_width, daily_height))
-    pag.screenshot("ss/daily2.png", region = (daily_x, 335, daily_width, daily_height))
-    pag.screenshot("ss/daily3.png", region = (daily_x, 435, daily_width, daily_height))
+    pag.screenshot("ss/daily1.png", region = (daily_x, 222, daily_width, daily_height))
+    pag.screenshot("ss/daily2.png", region = (daily_x, 347, daily_width, daily_height))
+    pag.screenshot("ss/daily3.png", region = (daily_x, 446, daily_width, daily_height))
     
     print("done")
 
@@ -223,6 +223,11 @@ def ApiChallenge(type, idx, desc, start_dt, end_dt):
 def PostToApi(json_obj):
     # POST JSON data to API
     print("POSTing to API...")
+
+    update_challenge_data_without_resetting_completion_status = False
+    if update_challenge_data_without_resetting_completion_status:
+        json_obj["suppressCompletionPurge"] = True
+
     json_str = json.dumps(json_obj)
 
     api_key = os.environ.get('POST_CHALLENGES_API_KEY')
@@ -242,7 +247,11 @@ def CalculateChallengeData():
     print("Calculating challenge data...")
     now = datetime.datetime.now(datetime.timezone.utc)
     
-    daily_start_time = datetime.datetime(now.year, now.month, now.day, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
+    daily_start_time = datetime.datetime(now.year, now.month, now.day, 3, 0, 0, 0, tzinfo=datetime.timezone.utc)
+    # Handle case where this script is run between 12AM - 3AM UTC (8PM - 11PM EST)
+    if now.hour < 3:
+        daily_start_time -= datetime.timedelta(days=1)
+
     daily_end_time = daily_start_time + datetime.timedelta(hours=24) - datetime.timedelta(microseconds=1)
     
     challenges = []
