@@ -11,6 +11,7 @@ import time
 import cv2
 import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+import matplotlib.pyplot as plt
 
 play_tab_selected = 'assets/PlayTabSelected_1440p.png'
 reward_center_btn = 'assets/RewardCenter_1440p.png'
@@ -76,10 +77,10 @@ def SaveDailies():
     # Navigate to Challenges page
     time.sleep(1)
     pag.click(1178, 31)
-    time.sleep(1)
+    time.sleep(2)
     # Navigate to Daily Challenges page
     pag.click(2247, 567)
-    time.sleep(1)
+    time.sleep(2)
 
     #daily_x = 1990
     daily_y = 595
@@ -167,35 +168,52 @@ def DailyCheckIn():
 
 
 def ImageToText(fileName):
+
+    debug = []
     img = cv2.imread(fileName)    
+    debug.append( ("Original", img) )
 
     # Convert to grayscale. Must be done before thresholding.
-    img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    debug.append( ("Grayscale", img_gray) )
     
     # Find & use best threshold based on confidence level
     best_min_prob = 0.0
     best_text = ""
     char_whitelist = '"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ,0123456789"'
-    for thresh in range(120, 181, 10):
+    for thresh in range(150, 181, 10):
         # Text is white, so invert to black text on white background for thresholding
-        img_thresh = cv2.threshold(img, thresh, 255, cv2.THRESH_BINARY_INV)[1]
+        img_thresh = cv2.threshold(img_gray, thresh, 255, cv2.THRESH_BINARY_INV)[1]
         d = pytesseract.image_to_data(img_thresh, output_type=pytesseract.Output.DICT,
                 config=f'-c tessedit_char_whitelist={char_whitelist} --psm 6')
         try:
             df = [float(i) for i in d['conf']]
             probs = [prob for prob in df if prob >= 0]
             min_prob = min(probs)
+            text = pytesseract.image_to_string(img_thresh)
+            text = text.replace("\n", " ").rstrip()
+            debug.append( (f"Thresh:{thresh}  Min Prob:{min_prob:.0f}  Text:'{text}'", img_thresh) )
             # >1 => If threshold is too high or too low, the system will be very confident with a
             # one word solution, which is never valid
             if min_prob > best_min_prob and len(probs) > 1:
-                text = pytesseract.image_to_string(img_thresh)
-                text = text.replace("\n", " ").rstrip()
                 if text != "":
                     best_text = text
                     best_min_prob = min_prob
                     #print(f'{thresh} : {min_prob}  "{text}"  {probs}')
-        except:
+        except Exception as e:
+            #print(f"Exception at threshold {thresh}: {e}")
             pass
+
+    show_debug = False
+    if show_debug:
+        fig, axes = plt.subplots(len(debug), 1, figsize=(10,len(debug)*1.25))
+        for idx, image in enumerate(debug):
+            axes[idx].imshow(cv2.cvtColor(image[1], cv2.COLOR_BGR2RGB))
+            axes[idx].set_title(image[0])
+            axes[idx].get_xaxis().set_visible(False)
+            axes[idx].get_yaxis().set_visible(False)
+        plt.tight_layout()
+        plt.show()
 
     print(best_text)
     return best_text
