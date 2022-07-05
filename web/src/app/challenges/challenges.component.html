@@ -1,4 +1,4 @@
-<div class="accordion noselect active" #accordion>
+<div [classList]="(allDailysCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
     <span class="challenge-title">DAILY CHALLENGES</span>
     <br />
     <span class="reset">{{dailyExpiryMsg}}</span>
@@ -7,10 +7,10 @@
     <div class="challenge noselect" *ngFor="let challenge of dailyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
         {{ challenge.description }}
     </div>
-    <div class="refreshTimestamp">{{ dailyRefreshMessage }}</div>
+    <div class="refreshTimestamp">{{ dailyLastUpdatedMessage }}</div>
 </div>
 <hr />
-<div class="accordion noselect active" #accordion>
+<div [classList]="(allWeeklysCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
     <span class="challenge-title">WEEKLY CHALLENGES</span>
     <br />
     <span class="reset">{{weeklyExpiryMsg}}</span>
@@ -19,10 +19,10 @@
     <div class="challenge noselect" *ngFor="let challenge of weeklyChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
         {{ challenge.description }}
     </div>
-    <div class="refreshTimestamp">{{ weeklyRefreshMessage }}</div>
+    <div class="refreshTimestamp">{{ weeklyLastUpdatedMessage }}</div>
 </div>
 <hr />
-<div class="accordion noselect active" #accordion>
+<div [classList]="(allSeasonalsCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
     <span class="challenge-title">SEASON CHALLENGES</span>
     <br />
     <span class="reset">{{seasonalExpiryMsg}}</span>
@@ -31,7 +31,7 @@
     <div class="challenge noselect" *ngFor="let challenge of seasonalChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
         {{ challenge.description }}
     </div>
-    <div class="refreshTimestamp">{{ seasonalRefreshMessage }}</div>
+    <div class="refreshTimestamp">{{ seasonalLastUpdatedMessage }}</div>
 </div>
 
 <!-- <div *ngFor="let stageNumber of seasonalStages.keys()">

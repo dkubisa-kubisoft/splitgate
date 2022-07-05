@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
-import { ChallengesComponent } from './challenge/challenge.component';
+import { ChallengesComponent } from './challenges/challenges.component';
 
 @NgModule({
   declarations: [
