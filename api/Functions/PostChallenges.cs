@@ -85,9 +85,17 @@ namespace Splitgate.Api.Functions
 
                     var seasonals = request.Challenges.Where(c => c.ChallengeType == ChallengeTypes.Seasonal);
 
-                    if (seasonals.Any(challenge => !challenge.Stage.HasValue))
+                    // TODO - DKUBISA: Uncomment this once scraper has been updated.
+                    // if (seasonals.Any(challenge => !challenge.Stage.HasValue))
+                    // {
+                    //     return new BadRequestObjectResult(new { Message = "Invalid request: Request contains one or more seasonal challenges with no stage specified."});
+                    // }
+
+                    // TODO - DKUBISA: Remove this at some point?
+                    var unstagedSeasonals = seasonals.Where(challenge => !challenge.Stage.HasValue);
+                    foreach(var unstagedSeasonal in unstagedSeasonals) 
                     {
-                        return new BadRequestObjectResult(new { Message = "Invalid request: Request contains one or more seasonal challenges with no stage specified."});
+                        unstagedSeasonal.Stage = unstagedSeasonal.Index <= 12 ? 1 : 2;
                     }
                 }
                 catch
