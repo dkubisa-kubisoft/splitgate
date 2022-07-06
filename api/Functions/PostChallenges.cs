@@ -82,6 +82,13 @@ namespace Splitgate.Api.Functions
                         var invalidRequestTypes = request.Challenges.Select(c => c.ChallengeType);
                         return new BadRequestObjectResult(new { Message = $"Invalid request: Unknown challenge type(s): {string.Join(',', invalidChallengeTypes)}"});
                     }
+
+                    var seasonals = request.Challenges.Where(c => c.ChallengeType == ChallengeTypes.Seasonal);
+
+                    if (seasonals.Any(challenge => !challenge.Stage.HasValue))
+                    {
+                        return new BadRequestObjectResult(new { Message = "Invalid request: Request contains one or more seasonal challenges with no stage specified."});
+                    }
                 }
                 catch
                 {

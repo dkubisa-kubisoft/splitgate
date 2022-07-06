@@ -28,6 +28,7 @@ $challenge-container-background-color: rgba(2, 2, 2, 0.8);
 .stage {
     @extend .challenge-title;
     font-size: x-small;
+    margin: 10px 0;
 }
 .all-challenges-completed:after {
     color: black !important;

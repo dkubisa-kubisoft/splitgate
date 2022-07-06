@@ -44,18 +44,21 @@ namespace Splitgate.Api.Functions
             // Add the unexpired daily, weekly and seasonal challenges to the response along with the caller's completion
             // state for each challenge.
             response.DailyChallenges.AddRange(
-                dailys.Where(challenge => DateTime.Parse(challenge.EndDateUtc) > DateTime.UtcNow)
+                dailys.Where(challenge => DateTime.Parse(challenge.EndDateUtc).ToUniversalTime() > DateTime.UtcNow)
                 .Select(challenge => challenge.GetModelObject(completedChallenges.Any(completed => completed.RowKey == $"{challenge.ChallengeType},{challenge.Index}"))));
             response.DailyChallengeRefreshTimestamp = dailys.Select(challenge => challenge.Timestamp).Min() ?? DateTime.MinValue;
 
             response.WeeklyChallenges.AddRange(
-                weeklys.Where(challenge => DateTime.Parse(challenge.EndDateUtc) > DateTime.UtcNow)
+                weeklys.Where(challenge => DateTime.Parse(challenge.EndDateUtc).ToUniversalTime() > DateTime.UtcNow)
                 .Select(challenge => challenge.GetModelObject(completedChallenges.Any(completed => completed.RowKey == $"{challenge.ChallengeType},{challenge.Index}"))));
             response.WeeklyChallengeRefreshTimestamp = weeklys.Select(challenge => challenge.Timestamp).Min() ?? DateTimeOffset.MinValue;
 
             response.SeasonalChallenges.AddRange(
-                seasonals.Where(challenge => DateTime.Parse(challenge.EndDateUtc) > DateTime.UtcNow)
-                .Select(challenge => challenge.GetModelObject(completedChallenges.Any(completed => completed.RowKey == $"{challenge.ChallengeType},{challenge.Index}"))));
+                seasonals.Where(challenge => DateTime.Parse(challenge.EndDateUtc).ToUniversalTime() > DateTime.UtcNow)
+                .Select(challenge => challenge.GetModelObject(completedChallenges.Any(completed => completed.RowKey == $"{challenge.ChallengeType},{challenge.Index}")))
+                .OrderBy(c => c.Stage)
+                .ThenBy(c => c.Index)
+            );
             response.SeasonalChallengeRefreshTimestamp = seasonals.Select(challenge => challenge.Timestamp).Min() ?? DateTimeOffset.MinValue;
 
             return new OkObjectResult(response);

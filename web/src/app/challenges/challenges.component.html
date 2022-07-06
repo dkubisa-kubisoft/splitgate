@@ -22,6 +22,7 @@
     <div class="refreshTimestamp">{{ weeklyLastUpdatedMessage }}</div>
 </div>
 <hr />
+<!-- 
 <div [classList]="(allSeasonalsCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
     <span class="challenge-title">SEASON CHALLENGES</span>
     <br />
@@ -32,19 +33,48 @@
         {{ challenge.description }}
     </div>
     <div class="refreshTimestamp">{{ seasonalLastUpdatedMessage }}</div>
+</div> -->
+
+<!-- 
+<ul>
+    <li *ngFor="let stage of seasonalChallengesByStage | keyvalue">
+        {{stage.key}}:
+        <ul>
+            <li *ngFor="let challenge of stage.value">
+                {{challenge.description}}
+            </li>
+        </ul>
+    </li>
+</ul> -->
+
+
+<div [classList]="(allSeasonalsCompleted ? 'all-challenges-completed' : '') + ' challenge-title-container accordion noselect active'" #accordion>
+    <span class="challenge-title">SEASON CHALLENGES</span>
+    <br />
+    <span class="reset">{{seasonalExpiryMsg}}</span>
+</div>
+<div class="panel">
+    <div *ngFor="let stage of seasonalChallengesByStage | keyvalue">
+        <div class="stage">STAGE {{stage.key}}</div>
+        <div class="challenge noselect" *ngFor="let challenge of stage.value" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+            {{ challenge.description }}
+        </div>
+    </div>
+    <div class="refreshTimestamp">{{ seasonalLastUpdatedMessage }}</div>
 </div>
 
-<!-- <div *ngFor="let stageNumber of seasonalStages.keys()">
+
+<!-- 
+<div *ngFor="let stage of seasonalStages">
     <div class="accordion noselect active" #accordion>
         <div class="challenge-title">
-            SEASON CHALLENGES<br/>
-            <span class="stage">STAGE {{stageNumber}}</span>
+            SEASON CHALLENGES - STAGE {{stage}}<br/>
         </div>
         <br />
         <span class="reset">{{seasonalExpiryMsg}}</span>
     </div>
     <div class="panel">
-        <div class="challenge noselect" *ngFor="let challenge of seasonalStages.get(stageNumber)" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+        <div class="challenge noselect" *ngFor="let challenge of seasonalChallengesByStage.values" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
             {{ challenge.description }}
         </div>
         <div class="refreshTimestamp">{{ seasonalRefreshMessage }}</div>
