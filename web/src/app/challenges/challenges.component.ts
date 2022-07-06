@@ -38,6 +38,9 @@ export class ChallengesComponent implements OnInit, AfterViewInit
   seasonalLastUpdatedMessage: string = ""; //The "Last updated" message for the seasonal challenges
   allSeasonalsCompleted: boolean = false; //Flag indicating whether all seasonal challenges have been completed
 
+  seasonalChallengesByStage: Map<number, Challenge[]> = new Map<number, Challenge[]>();
+  seasonalStages: number[] = [];
+
   /**
    * Initializes a new instance of the ChallengesComponent class.
    * @param challengeService The challenge service.
@@ -100,6 +103,20 @@ export class ChallengesComponent implements OnInit, AfterViewInit
 
           this.seasonalChallenges = response.seasonalChallenges;
           this.seasonalLastUpdatedMessage = this.getRefreshedMessage(new Date(response.seasonalChallengeRefreshTimestamp));
+
+          response.seasonalChallenges.forEach((challenge) => 
+          {
+            let challengesForStage = this.seasonalChallengesByStage.get(challenge.stage ?? 0) ?? [];
+
+            if (this.seasonalStages.find(stage => stage === challenge.stage) === null) 
+            {
+              this.seasonalStages.push(challenge.stage ?? 0);
+            }
+
+            challengesForStage.push(challenge);
+            challengesForStage.reverse();
+            this.seasonalChallengesByStage.set(challenge.stage ?? 0, challengesForStage);
+          });
 
           this.updateAllGroupCompletions();
 

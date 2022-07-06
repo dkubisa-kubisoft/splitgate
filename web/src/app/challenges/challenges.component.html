@@ -28,15 +28,11 @@
     <span class="reset">{{seasonalExpiryMsg}}</span>
 </div>
 <div class="panel">
-    <div class="challenge noselect" *ngFor="let challenge of seasonalChallenges" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
-        {{ challenge.description }}
+    <div *ngFor="let stage of seasonalChallengesByStage | keyvalue">
+        <div class="stage">STAGE {{stage.key}}</div>
+        <div class="challenge noselect" *ngFor="let challenge of stage.value" [ngClass]="{'completed': challenge.completed == true}" onclick="clickChallenge(this)" (click)="toggleChallengeCompletion(challenge)">
+            {{ challenge.description }}
+        </div>
     </div>
     <div class="refreshTimestamp">{{ seasonalLastUpdatedMessage }}</div>
 </div>
-
-
-
-
-
-
-
