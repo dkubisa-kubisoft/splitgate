@@ -12,11 +12,11 @@ import { ToggleChallengeCompletionRequest } from './Requests/ToggleChallengeComp
   providedIn: 'root'
 })
 export class ChallengeService {
-  // private getCurrentChallengesUrl = 'https://splitgate-challenge-api.azurewebsites.net/api/GetCurrentChallenges';
-  // private toggleChallengeCompletionUrl = 'https://splitgate-challenge-api.azurewebsites.net/api/ToggleChallengeCompletion?code=wExZuwtDZKs61WDzVjdGpnwngCYhQblATQzbPIvN8kWoAzFuC158EA==';
+  private getCurrentChallengesUrl = 'https://splitgate-challenge-api.azurewebsites.net/api/GetCurrentChallenges';
+  private toggleChallengeCompletionUrl = 'https://splitgate-challenge-api.azurewebsites.net/api/ToggleChallengeCompletion?code=wExZuwtDZKs61WDzVjdGpnwngCYhQblATQzbPIvN8kWoAzFuC158EA==';
 
-  private getCurrentChallengesUrl = 'http://localhost:7071/api/GetCurrentChallenges';
-  private toggleChallengeCompletionUrl = 'http://localhost:7071/api/ToggleChallengeCompletion?code=wExZuwtDZKs61WDzVjdGpnwngCYhQblATQzbPIvN8kWoAzFuC158EA==';
+  //private getCurrentChallengesUrl = 'http://localhost:7071/api/GetCurrentChallenges';
+  //private toggleChallengeCompletionUrl = 'http://localhost:7071/api/ToggleChallengeCompletion?code=wExZuwtDZKs61WDzVjdGpnwngCYhQblATQzbPIvN8kWoAzFuC158EA==';
 
   getCurrentChallenges(): Observable<GetCurrentChallengesResponse> {
     return this.http.get<GetCurrentChallengesResponse>(this.getCurrentChallengesUrl);
