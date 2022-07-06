@@ -114,7 +114,6 @@ export class ChallengesComponent implements OnInit, AfterViewInit
             }
 
             challengesForStage.push(challenge);
-            challengesForStage.reverse();
             this.seasonalChallengesByStage.set(challenge.stage ?? 0, challengesForStage);
           });
 
