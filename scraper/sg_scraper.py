@@ -167,7 +167,7 @@ def DailyCheckIn():
     GetToMainMenu()
 
 
-def ImageToText(fileName):
+def ImageToText(fileName, showDebug=False):
 
     debug = []
     img = cv2.imread(fileName)    
@@ -181,7 +181,10 @@ def ImageToText(fileName):
     best_min_prob = 0.0
     best_text = ""
     char_whitelist = '"abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ,0123456789"'
-    for thresh in range(150, 181, 10):
+    thresholds = range(150, 181, 10)
+    if img[1][1][0] < 100: # Completed challenge is more yellow than blue
+        thresholds = range(240, 204, -10)
+    for thresh in thresholds:
         # Text is white, so invert to black text on white background for thresholding
         img_thresh = cv2.threshold(img_gray, thresh, 255, cv2.THRESH_BINARY_INV)[1]
         d = pytesseract.image_to_data(img_thresh, output_type=pytesseract.Output.DICT,
@@ -192,7 +195,7 @@ def ImageToText(fileName):
             min_prob = min(probs)
             text = pytesseract.image_to_string(img_thresh)
             text = text.replace("\n", " ").rstrip()
-            debug.append( (f"Thresh:{thresh}  Min Prob:{min_prob:.0f}  Text:'{text}'", img_thresh) )
+            debug.append( (f"Thresh:{thresh}  Min Prob:{min_prob:.0f}%  Text:'{text}'", img_thresh) )
             # >1 => If threshold is too high or too low, the system will be very confident with a
             # one word solution, which is never valid
             if min_prob > best_min_prob and len(probs) > 1:
@@ -204,8 +207,7 @@ def ImageToText(fileName):
             #print(f"Exception at threshold {thresh}: {e}")
             pass
 
-    show_debug = False
-    if show_debug:
+    if showDebug:
         fig, axes = plt.subplots(len(debug), 1, figsize=(10,len(debug)*1.25))
         for idx, image in enumerate(debug):
             axes[idx].imshow(cv2.cvtColor(image[1], cv2.COLOR_BGR2RGB))
@@ -225,10 +227,13 @@ def DatetimeToString(dt):
     return dt.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
-def ApiChallenge(type, idx, desc, start_dt, end_dt):
+def ApiChallenge(type, idx, desc, start_dt, end_dt, stage=0):
     """ JSON format specified by the PostChallenges API
     """
-    return {"challengeType": type, "index": idx, "description": desc, "startDateUtc": DatetimeToString(start_dt), "endDateUtc": DatetimeToString(end_dt) }
+    if stage == 0:
+        return {"challengeType": type, "index": idx, "description": desc, "startDateUtc": DatetimeToString(start_dt), "endDateUtc": DatetimeToString(end_dt) }
+    else:
+        return {"challengeType": type, "index": idx, "description": desc, "startDateUtc": DatetimeToString(start_dt), "endDateUtc": DatetimeToString(end_dt), "stage": stage }
 
 
 def PostToApi(json_obj, preserve_challenge_completions = False):
@@ -293,8 +298,10 @@ def CalculateChallengeData():
 
 def PostSeasonChallenges():
     
-    season_challenges = [
-        # Stage 1
+    stages = []
+
+    # Stage 1
+    stages.append( [
         'Reach Pro level 1',
         'Play 300 Matches',
         'Get 3,000 Kills',
@@ -306,8 +313,11 @@ def PostSeasonChallenges():
         'Shut down 100 enemy portals',
         'Get 1 Collateral Kill',
         'Get 50 Revenge kills',
-        'Get 300 kills with the AR',
-        # Stage 2
+        'Get 300 kills with the AR'
+        ] )
+
+    # Stage 2
+    stages.append( [
         'Get 75 BFB Kills',
         'Play 30 matches in the Featured Playlist',
         'Get 100 kills with the Plasma Rifle',
@@ -319,14 +329,34 @@ def PostSeasonChallenges():
         'Unlock 3 badges',
         'Win a match in 7 different playlists',
         'Get a Quad Kill',
-        'Win a match with the Highest Score and Most Kills']
+        'Win a match with the Highest Score and Most Kills'
+        ] )
+
+    # Stage 3
+    stages.append( [
+        'Win a Match on 10 Different Maps',
+        'Play 20 matches of Team SWAT',
+        'Get 30 Double Kills',
+        'Get 200 Kills with the AR',
+        'Get 50 Kills Through Portals',
+        'Get 100 Assist Kills',
+        'Get 100 kills with the Battle Rifle',
+        'Reach Pro level 3',
+        'Get 30 kills with the Railgun',
+        'Get the Most Kills on your team in 10 Matches',
+        'Win a match of 10 different game modes',
+        'Get 1 Collateral Kill'
+        ] )
 
     # Dates hard-coded for Beta Season 1
     season_start_time = datetime.datetime(2022, 6, 2, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
     season_end_time = datetime.datetime(2022, 9, 2, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
     challenges = []
-    for idx in range(len(season_challenges)):
-        challenges.append( ApiChallenge("seasonal", idx + 1, season_challenges[idx], season_start_time, season_end_time) )
+    for stage_idx, stage in enumerate(stages):
+        for idx in range(len(stage)):
+            challenge_idx = len(challenges)
+            stage_number = stage_idx + 1
+            challenges.append( ApiChallenge("seasonal", challenge_idx + 1, stage[idx], season_start_time, season_end_time, stage_number) )
     
     challenges_json = {}
     challenges_json["challenges"] = challenges
