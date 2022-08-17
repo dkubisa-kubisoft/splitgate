@@ -17,6 +17,9 @@ play_tab_selected = 'assets/PlayTabSelected_1440p.png'
 reward_center_btn = 'assets/RewardCenter_1440p.png'
 daily_check_in_btn = 'assets/DailyCheckIn_1440p.png'
 claim_btn = 'assets/ClaimReward_1440p.png'
+challenges_screen = 'assets/ChallengesScreen_1440p.png'
+daily_challenges_screen = 'assets/DailyChallengesScreen_1440p.png'
+weekly_challenges_screen = 'assets/WeeklyChallengesScreen_1440p.png'
 
 
 def RunSplitgate():
@@ -32,16 +35,25 @@ def CloseSplitgate():
     subprocess.call(["taskkill","/F","/IM","PortalWars-Win64-Shipping.exe"])
 
 
-def FindOnScreen(png):
+def FindOnScreen(png, region=None):
     try:
-        loc = pag.locateOnScreen(png)
-        filename = png.split('\\')[-1]
+        loc = pag.locateOnScreen(png, region=region)
         if loc == None:
+            filename = png.split('\\')[-1]
             print(f"Not found on screen: {filename}")
     except:
         print("Not found on screen (exception)")
         return None
     
+    return loc
+
+
+def WaitForPageToLoad(screenImage, region=None):
+    loc = None
+    while( loc == None):
+        time.sleep(0.1)
+        loc = FindOnScreen(screenImage, region)
+        
     return loc
     
 
@@ -58,13 +70,16 @@ def GetToMainMenu():
     play_tab_loc = None
     attempt = 1
     while play_tab_loc == None:
+        # Force focus on Splitgate app by clicking somewhere with no buttons
+        pag.moveTo( (500, 0) )
+        pag.click( (500, 0) )
         pag.keyDown('esc')
         time.sleep(0.1)
         pag.keyUp('esc')
-        time.sleep(1)
-        play_tab_loc = FindOnScreen(play_tab_selected)
+        time.sleep(0.1)
+        play_tab_loc = FindOnScreen(play_tab_selected, region=(650, 0, 250, 100) )
         attempt += 1
-        if attempt >= 50:
+        if attempt >= 500:
             print("Unable to find main menu. Exiting.")
             exit()
 
@@ -73,14 +88,19 @@ def GetToMainMenu():
 
 def SaveDailies():
     print("Saving dailies...")
+    GetToMainMenu()
 
     # Navigate to Challenges page
-    time.sleep(1)
+    pag.moveTo(1178, 31)
     pag.click(1178, 31)
-    time.sleep(2)
+    WaitForPageToLoad(challenges_screen, region=(50, 100, 650, 150))
+    
     # Navigate to Daily Challenges page
+    pag.moveTo(2247, 567)
     pag.click(2247, 567)
-    time.sleep(2)
+    # Move cursor off of challenges, as it highlights it with moving speckles that interfere with OCR
+    pag.moveTo(10, 10)
+    WaitForPageToLoad(daily_challenges_screen, region=(30, 80, 350, 200))
 
     #daily_x = 1990
     daily_y = 595
@@ -91,10 +111,10 @@ def SaveDailies():
     pag.screenshot("ss/daily2.png", region = (900, daily_y, daily_width, daily_height))
     pag.screenshot("ss/daily3.png", region = (1690, daily_y, daily_width, daily_height))
     
-    print("done")
+    print("Daily Challenges images saved.")
 
 
-def IsThursday():
+def ShouldUpdateWeeklies():
     return datetime.datetime.now(datetime.timezone.utc).weekday() == 3
 
 
@@ -106,15 +126,20 @@ def SaveWeeklies():
  
     # Refresh Weekly Challenges if this script has not been run yet or if it's a Thursday and new
     # Weekly Challenges are now available
-    if IsThursday() or not os.path.exists('ss/weekly1.png'):
+    if ShouldUpdateWeeklies() or not os.path.exists('ss/weekly1.png'):
         print("Saving new weeklies...")
+        GetToMainMenu()
         # Navigate to Challenges page
-        time.sleep(1)
+        pag.moveTo(1178, 31)
         pag.click(1178, 31)
-        time.sleep(2)
+        WaitForPageToLoad(challenges_screen, region=(50, 100, 650, 150))
+
         # Navigate to Weekly Challenges page
+        pag.moveTo(1518, 544)
         pag.click(1518, 544)
-        time.sleep(2)
+        # Move cursor off of challenges, as it highlights it with moving speckles that interfere with OCR
+        pag.moveTo(10, 10)
+        WaitForPageToLoad(weekly_challenges_screen, region=(50, 100, 400, 150))
         
         # Save Weekly challenges from screen
         weekly_y = 575
@@ -127,12 +152,14 @@ def SaveWeeklies():
         weekly4 = pag.screenshot("ss/weekly4.png", region = (1297, weekly_y, weekly_width, weekly_height))
         weekly5 = pag.screenshot("ss/weekly5.png", region = (1690, weekly_y, weekly_width, weekly_height))
         weekly6 = pag.screenshot("ss/weekly6.png", region = (2083, weekly_y, weekly_width, weekly_height))
-        print("done")
+        print("Weekly Challenges images saved.")
     else:
         print("Weeklies already up-to-date.")
 
 
 def DailyCheckIn():
+
+    GetToMainMenu()
 
     # Bring up the menu
     pag.keyDown('esc')
@@ -140,32 +167,25 @@ def DailyCheckIn():
     pag.keyUp('esc')
     
     # Find and press the Reward Center button
-    reward_center_loc = FindOnScreen(reward_center_btn)
-    if reward_center_loc != None:
-        print("Clicking on Reward Center")
-        pag.moveTo(reward_center_loc)
-        time.sleep(1)
-        pag.click(reward_center_loc)
-        time.sleep(1)
+    reward_center_loc = WaitForPageToLoad(reward_center_btn, region=(50, 100, 400, 100) )
+    print("Clicking on Reward Center")
+    pag.moveTo(reward_center_loc)
+    pag.click(reward_center_loc)
 
-        daily_loc = FindOnScreen(daily_check_in_btn)
-        if daily_loc != None:
-            print("Clicking on Daily Check-In")
-            pag.moveTo(daily_loc)
-            time.sleep(1)
-            pag.click(daily_loc)
-            time.sleep(2)
-            claim_btn_loc = FindOnScreen(claim_btn)
-            if claim_btn_loc != None:
-                pag.moveTo(claim_btn_loc)
-                time.sleep(1)
-                print("Clicking on Claim Reward")
-                pag.click(claim_btn_loc)
-            time.sleep(1)
+    daily_loc = WaitForPageToLoad(daily_check_in_btn, region=(100, 300, 450, 150) )
+    print("Clicking on Daily Check-In")
+    pag.moveTo(daily_loc)
+    pag.click(daily_loc)
     
-    # Be a good neighbor and put the application back in the state we started in.
-    GetToMainMenu()
-
+    # TODO: Possibly add a "WaitForPageToLoad" to ensure we're on Check-in page before looking for Claim button
+    claim_btn_loc = FindOnScreen(claim_btn, region=(1500, 950, 1000, 300))
+    if claim_btn_loc != None:
+        print("Clicking on Claim Reward")
+        pag.moveTo(claim_btn_loc)
+        pag.click(claim_btn_loc)
+    else:
+        print("No Claim button to click")
+    
 
 def ImageToText(fileName, showDebug=False):
 
@@ -217,7 +237,6 @@ def ImageToText(fileName, showDebug=False):
         plt.tight_layout()
         plt.show()
 
-    print(best_text)
     return best_text
 
 
@@ -272,27 +291,34 @@ def CalculateChallengeData():
     challenges = []
 
     # Daily Challenges
+    print("===== Daily Challenges =====")
     for idx in range(3):
         description = ImageToText(f'ss/daily{idx + 1}.png')
+        print("", description)
         challenges.append( ApiChallenge("daily", idx + 1, description, daily_start_time, daily_end_time) )
 
     # Weekly Challenges
     # Only send updated Weekly challenges on Thursday (local time) when they refresh
-    if IsThursday():
+    if ShouldUpdateWeeklies():
         weekly_start_time = daily_start_time
+        
+        # If this script is run on a day later than UTC Thursday, fix weekly start time
         # 3 = Thursday
         while weekly_start_time.weekday() != 3:
             weekly_start_time -= datetime.timedelta(hours=24)
+
         weekly_end_time = weekly_start_time + datetime.timedelta(days=7) - datetime.timedelta(microseconds=1)
         
+        print("===== Weekly Challenges =====")
         for idx in range(6):
             description = ImageToText(f'ss/weekly{idx + 1}.png')
+            print("", description)
             challenges.append( ApiChallenge("weekly", idx + 1, description, weekly_start_time, weekly_end_time) )
 
     json_obj = {}
     json_obj["challenges"] = challenges
 
-    print("done")
+    print("Finished converting challenge images to text.")
     return json_obj
 
 
@@ -348,6 +374,23 @@ def PostSeasonChallenges():
         'Get 1 Collateral Kill'
         ] )
 
+    # Stage 4
+    stages.append( [
+        'Play 10 Matches in 1 Day',
+        'Get 10 King Slayer kills',
+        'Go through 30 enemy portals',
+        'Get 30 kills with the Pistol',
+        'Play 15 matches of Sniper Frenzy',
+        'Get 5 Triple Kills',
+        'Win 3 matches of FFA Brawl',
+        'Get the Highest Score on your team in 10 Matches',
+        'Get 5 Killection Agency medals',
+        'Inflict 30k damage',
+        'Get 20 kills with the BFB',
+        'Finish the Battle Pass'
+    ] )
+
+
     # Dates hard-coded for Beta Season 1
     season_start_time = datetime.datetime(2022, 6, 2, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
     season_end_time = datetime.datetime(2022, 9, 2, 8, 0, 0, 0, tzinfo=datetime.timezone.utc)
@@ -368,14 +411,14 @@ def main():
     # Create a folder to store captured screenshots
     if not os.path.exists('ss'):
         os.makedirs('ss')
-
+    
+    start_time = time.time()
     RunSplitgate()
-    GetToMainMenu()
     DailyCheckIn()
     SaveDailies()
-    GetToMainMenu()
     SaveWeeklies()
     CloseSplitgate()
+    print(f"Splitgate open for {time.time() - start_time:.1f} sec")
     challenges = CalculateChallengeData()
     PostToApi(challenges)
 
@@ -383,6 +426,8 @@ def main():
 # Run main
 if __name__ == '__main__':
     main()
+
+    #ImageToText('ss/daily2.png', showDebug=True)
 
     # Manually run this once every 3 weeks when new Seasonals show up
     #PostSeasonChallenges()
